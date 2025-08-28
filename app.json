@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "VocaSpark",
-    "slug": "VocaSpark",
+    "name": "Luma",
+    "slug": "luma",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "vocaspark",
+    "scheme": "luma",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
