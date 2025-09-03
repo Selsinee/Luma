@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import * as Speech from 'expo-speech';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -42,18 +43,29 @@ const WordCard: React.FC<WordCardProps> = ({
   const diffStyle = difficultyStyles[difficulty];
   const isMastered = status === 'mastered';
 
+  const speakWord = async () => {
+    // Stop any speech that is already in progress
+    const isSpeaking = await Speech.isSpeakingAsync();
+    if (isSpeaking) {
+      await Speech.stop();
+    }
+    // Speak the current word
+    Speech.speak(word, { language: 'en-US' });
+  };
+
   return (
     <View
       style={[
         styles.card,
-        isMastered ? styles.masteredCardBackground : styles.defaultCardBorder, // Apply green background conditionally
+        isMastered ? styles.masteredCardBackground : styles.defaultCardBorder,
       ]}
     >
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.word}>{word}</Text>
         <View style={styles.headerIcons}>
-          <TouchableOpacity>
+          {/* 3. Add the onPress handler to the TouchableOpacity */}
+          <TouchableOpacity onPress={speakWord}>
             <Feather name="volume-2" size={20} color="#555" />
           </TouchableOpacity>
           <TouchableOpacity style={{ marginLeft: 16 }}>
@@ -71,7 +83,7 @@ const WordCard: React.FC<WordCardProps> = ({
             {difficulty}
           </Text>
         </View>
-        {isMastered && ( // Display mastered tag only if mastered
+        {isMastered && (
           <View style={[styles.tag, styles.masteredTag]}>
             <Text style={[styles.tagText, styles.masteredTagText]}>
               Mastered
@@ -101,15 +113,13 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  // Default border for cards that are NOT mastered
   defaultCardBorder: {
     backgroundColor: '#FFFFFF',
-    borderColor: '#E8E8F0', // Light grey border for non-mastered
+    borderColor: '#E8E8F0',
   },
-  // Green background and border for mastered cards
   masteredCardBackground: {
-    backgroundColor: '#F7FEF9', // A very light green background
-    borderColor: '#C8E6C9', // A slightly darker pastel green border
+    backgroundColor: '#F7FEF9',
+    borderColor: '#C8E6C9',
   },
   header: {
     flexDirection: 'row',
@@ -139,12 +149,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textTransform: 'capitalize',
   },
-  // Styles for the "Mastered" TAG itself (the small pill)
   masteredTag: {
-    backgroundColor: '#C8E6C9', // Pastel green background for the tag pill
+    backgroundColor: '#C8E6C9',
   },
   masteredTagText: {
-    color: '#2d7130ff', // Softer green text for the tag pill
+    color: '#2d7130ff',
   },
   contentSection: {
     marginTop: 16,

@@ -1,8 +1,9 @@
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DeckOptionsMenu } from './DeckOptionsMenu';
 
 // New props interface to include category and studiedToday
 interface DeckCardDetailedProps {
@@ -27,60 +28,81 @@ const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({
   const percentage =
     totalItems > 0 ? Math.round((currentProgress / totalItems) * 100) : 0;
   const router = useRouter();
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const triggerRef = useRef<View>(null);
+
+  const onMenuPress = () => {
+    triggerRef.current?.measure((_fx, _fy, _width, height, px, py) => {
+      setMenuPosition({
+        top: py + height,
+        right: 20,
+      });
+      setMenuVisible(true);
+    });
+  };
 
   return (
-    <TouchableOpacity
-      style={styles.cardContainer}
-      onPress={() => {
-        router.navigate('/deck-details');
-      }}
-    >
-      {/* Header Section */}
-      <View style={styles.headerRow}>
-        <View style={styles.headerInfo}>
-          <View style={styles.iconContainer}>
-            <Feather name="book-open" size={20} color={Colors.primary} />
+    <>
+      <DeckOptionsMenu
+        isVisible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        menuPosition={menuPosition}
+      />
+
+      <TouchableOpacity
+        style={styles.cardContainer}
+        onPress={() => {
+          router.navigate('/deck-details');
+        }}
+      >
+        {/* Header Section */}
+        <View style={styles.headerRow}>
+          <View style={styles.headerInfo}>
+            <View style={styles.iconContainer}>
+              <Feather name="book-open" size={20} color={Colors.primary} />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.deckTitle}>{title}</Text>
+              <Text style={styles.deckDescription}>{description}</Text>
+            </View>
           </View>
-          <View style={styles.titleContainer}>
-            <Text style={styles.deckTitle}>{title}</Text>
-            <Text style={styles.deckDescription}>{description}</Text>
-          </View>
+          <TouchableOpacity ref={triggerRef} onPress={onMenuPress}>
+            <Feather name="more-vertical" size={18} color="#8A8A8A" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Feather name="more-vertical" size={18} color="#8A8A8A" />
+
+        {/* Category Tag */}
+        <View style={styles.tagContainer}>
+          <Text style={styles.tagText}>{category}</Text>
+        </View>
+
+        {/* Progress Bar Section */}
+        <View style={styles.progressSection}>
+          <Text style={styles.progressLabel}>Progress</Text>
+          <Text style={styles.percentageText}>{percentage}%</Text>
+        </View>
+        <View style={styles.progressBarBackground}>
+          <View style={[styles.progressBarFill, { width: `${percentage}%` }]} />
+        </View>
+
+        {/* Stats Section */}
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{totalItems} cards</Text>
+            <Text style={styles.statLabel}> · </Text>
+            <Feather name="clock" size={12} color="#8A8A8A" />
+            <Text style={styles.statLabel}> {lastStudied}</Text>
+          </View>
+          <Text style={styles.statLabel}>{studiedToday} studied today</Text>
+        </View>
+
+        {/* Action Button */}
+        <TouchableOpacity style={styles.studyButton}>
+          <Text style={styles.studyButtonText}>Study Now</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* Category Tag */}
-      <View style={styles.tagContainer}>
-        <Text style={styles.tagText}>{category}</Text>
-      </View>
-
-      {/* Progress Bar Section */}
-      <View style={styles.progressSection}>
-        <Text style={styles.progressLabel}>Progress</Text>
-        <Text style={styles.percentageText}>{percentage}%</Text>
-      </View>
-      <View style={styles.progressBarBackground}>
-        <View style={[styles.progressBarFill, { width: `${percentage}%` }]} />
-      </View>
-
-      {/* Stats Section */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totalItems} cards</Text>
-          <Text style={styles.statLabel}> · </Text>
-          <Feather name="clock" size={12} color="#8A8A8A" />
-          <Text style={styles.statLabel}> {lastStudied}</Text>
-        </View>
-        <Text style={styles.statLabel}>{studiedToday} studied today</Text>
-      </View>
-
-      {/* Action Button */}
-      <TouchableOpacity style={styles.studyButton}>
-        <Text style={styles.studyButtonText}>Study Now</Text>
       </TouchableOpacity>
-    </TouchableOpacity>
+    </>
   );
 };
 

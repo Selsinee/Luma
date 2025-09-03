@@ -3,7 +3,7 @@ import StudyFeedback from '@/components/flashcard/StudyFeedback';
 import StudyHeader from '@/components/flashcard/StudyHeader';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
@@ -161,13 +161,19 @@ export default function StudyScreen() {
 
   return (
     <View style={{ flex: 1, paddingBottom: insets.bottom }}>
-      <StudyHeader
-        deckTitle={`Advanced Vocabulary (Deck ${deckId})`}
-        currentCardIndex={currentWordIndex + 1}
-        totalCards={totalCards}
-        masteryPercentage={masteryPercentage}
-        onBackPress={handleBack}
-        onMenuPress={handleMenu}
+      <Stack.Screen
+        options={{
+          header: () => (
+            <StudyHeader
+              deckTitle={`Advanced Vocabulary (Deck ${deckId})`}
+              currentCardIndex={currentWordIndex + 1}
+              totalCards={totalCards}
+              masteryPercentage={masteryPercentage}
+              onBackPress={handleBack}
+              onMenuPress={handleMenu}
+            />
+          ),
+        }}
       />
 
       <View style={styles.flashcardArea}>

@@ -18,13 +18,21 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="study/[deckId]"
+          name="study/flashcard/[deckId]"
           options={{
             title: 'Flashcards',
             contentStyle: {
               backgroundColor: '#FFFFFF',
             },
-            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="study/quiz/[deckId]"
+          options={{
+            title: 'Quiz',
+            contentStyle: {
+              backgroundColor: '#FFFFFF',
+            },
           }}
         />
       </Stack>

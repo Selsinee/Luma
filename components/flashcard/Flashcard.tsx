@@ -1,7 +1,9 @@
 import Colors from '@/constants/Colors'; // Assuming Colors.borderColor exists and is a suitable default
 import { Feather } from '@expo/vector-icons';
+import * as Speech from 'expo-speech';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// MODIFIED: Import Gesture from the root of the library
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -63,11 +65,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const scale = useSharedValue(0.9);
   const opacity = useSharedValue(0);
 
-  // NEW: Shared values for reveal animation
   const revealedContentOpacity = useSharedValue(0);
   const revealedContentScale = useSharedValue(0.95);
 
-  // --- Enter Animation (for card appearing) ---
+  // --- Enter Animation ---
   useEffect(() => {
     translateX.value = 0;
     translateY.value = 0;
@@ -76,12 +77,11 @@ const Flashcard: React.FC<FlashcardProps> = ({
     opacity.value = withTiming(1, { duration: 300 });
     scale.value = withSpring(1);
 
-    // Reset reveal content state
     revealedContentOpacity.value = 0;
     revealedContentScale.value = 0.95;
   }, [word]);
 
-  // --- Reveal Animation (for definition/example appearing) ---
+  // --- Reveal Animation ---
   useEffect(() => {
     if (isRevealed) {
       revealedContentOpacity.value = withTiming(1, { duration: 250 });
@@ -100,15 +100,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   // --- Animated Styles ---
   const cardAnimatedStyle = useAnimatedStyle(() => {
-    // Determine border color based on swipe
     const animatedBorderColor = interpolateColor(
       translateX.value,
       [-150, 0, 150],
-      [
-        Colors.error, // Darker red for left swipe
-        Colors.borderColor, // Default color when not swiping
-        Colors.success, // Darker green for right swipe
-      ],
+      [Colors.error, Colors.borderColor, Colors.success],
     );
 
     return {
@@ -119,19 +114,18 @@ const Flashcard: React.FC<FlashcardProps> = ({
         { translateY: translateY.value },
         { rotateZ: `${rotation.value}deg` },
       ],
-      borderColor: animatedBorderColor, // Apply animated border color
+      borderColor: animatedBorderColor,
     };
   });
 
   const glowAnimatedStyle = useAnimatedStyle(() => {
-    // Determine lighter background glow color based on swipe
     const color = interpolateColor(
       translateX.value,
       [-150, 0, 150],
       [
-        'rgba(253, 206, 214, 0.3)', // Lighter red background glow
-        'rgba(0, 0, 0, 0.0)', // Transparent when not swiping
-        'rgba(204, 247, 207, 0.3)', // Lighter green background glow
+        'rgba(253, 206, 214, 0.3)',
+        'rgba(0, 0, 0, 0.0)',
+        'rgba(204, 247, 207, 0.3)',
       ],
     );
     return {
@@ -139,7 +133,6 @@ const Flashcard: React.FC<FlashcardProps> = ({
     };
   });
 
-  // NEW: Animated style for the revealed content
   const revealedContentAnimatedStyle = useAnimatedStyle(() => {
     return {
       opacity: revealedContentOpacity.value,
@@ -170,6 +163,14 @@ const Flashcard: React.FC<FlashcardProps> = ({
     }, 150);
   };
 
+  const speakWord = async () => {
+    const isSpeaking = await Speech.isSpeakingAsync();
+    if (isSpeaking) {
+      await Speech.stop();
+    }
+    Speech.speak(word, { language: 'en-US' });
+  };
+
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
       translateX.value = event.translationX;
@@ -197,7 +198,14 @@ const Flashcard: React.FC<FlashcardProps> = ({
       runOnJS(handleRevealToggle)();
     });
 
-  const composedGesture = Gesture.Simultaneous(panGesture, tapGesture);
+  // ✨ THE FIX IS HERE ✨
+  // We use Gesture.Race to ensure that native touchables (like the volume button)
+  // get priority over our custom pan/tap gestures.
+  const composedGesture = Gesture.Race(
+    Gesture.Native(),
+    panGesture,
+    tapGesture,
+  );
 
   return (
     <View style={styles.cardWrapper}>
@@ -228,7 +236,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
                 {difficulty}
               </Text>
             </View>
-            <TouchableOpacity onPress={() => Alert.alert('Sound!')}>
+            <TouchableOpacity onPress={speakWord}>
               <Feather name="volume-2" size={20} color="#555" />
             </TouchableOpacity>
           </View>
@@ -291,8 +299,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
     </View>
   );
 };
-
-// --- Styles ---
+// Styles are omitted for brevity but are the same as the previous response.
 const styles = StyleSheet.create({
   cardWrapper: {
     flex: 1,
@@ -302,8 +309,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    borderWidth: 2, // Increased border width for visibility
-    borderColor: Colors.borderColor, // Default border color
+    borderWidth: 2,
+    borderColor: Colors.borderColor,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -323,7 +330,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    // backgroundColor: '#F0F0F7', // You can uncomment this if you want a subtle background for the tip bar
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     flexDirection: 'row',

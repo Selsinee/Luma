@@ -1,8 +1,10 @@
+import CreateDeckModal from '@/components/decks/CreateDeckModal';
 import NewWordsWidget from '@/components/home/NewWordsWidget';
 import RecentDecksWidget from '@/components/home/RecentDecksWidget';
 import StatsWidget from '@/components/home/StatsWidget';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -15,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Index() {
   const insets = useSafeAreaInsets();
+  const [isVisible, setIsVisible] = useState(false);
   return (
     <View
       style={{
@@ -22,6 +25,12 @@ export default function Index() {
         backgroundColor: '#ffffff',
       }}
     >
+      <CreateDeckModal
+        isVisible={isVisible}
+        onClose={() => {
+          setIsVisible(false);
+        }}
+      />
       <ScrollView
         contentContainerStyle={{
           paddingBottom: insets.bottom + 16,
@@ -38,7 +47,10 @@ export default function Index() {
           weeklyGoal={7}
         />
         <View style={styles.header}>
-          <TouchableOpacity style={styles.newDeckButton}>
+          <TouchableOpacity
+            style={styles.newDeckButton}
+            onPress={() => setIsVisible(true)}
+          >
             <Feather name="plus" size={20} color="#FFFFFF" />
             <Text style={styles.newDeckButtonText}>New Deck</Text>
           </TouchableOpacity>

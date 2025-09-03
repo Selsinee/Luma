@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import CreateDeckModal from './CreateDeckModal';
 
 // Define the list of filter categories
 const FILTERS = [
@@ -23,9 +24,16 @@ const FILTERS = [
 const DeckFilters = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
+  const [isVisible, setIsVisible] = useState(false);
 
   return (
     <View style={styles.container}>
+      <CreateDeckModal
+        isVisible={isVisible}
+        onClose={() => {
+          setIsVisible(false);
+        }}
+      />
       {/* Search Bar and Create Button */}
       <View style={styles.searchRow}>
         <View style={styles.searchInputContainer}>
@@ -43,7 +51,10 @@ const DeckFilters = () => {
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.createButton}>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => setIsVisible(true)}
+        >
           <Feather name="plus" size={18} color="#FFFFFF" />
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>

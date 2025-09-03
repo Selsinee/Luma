@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Define the props for the component
 interface StudyActionsProps {
@@ -26,7 +26,7 @@ const StudyActions: React.FC<StudyActionsProps> = ({
       {/* Take Quiz Button (Secondary) */}
       <TouchableOpacity
         style={[styles.button, styles.secondaryButton]}
-        onPress={onQuizPress || (() => Alert.alert('Take Quiz pressed'))}
+        onPress={onQuizPress}
       >
         <Feather name="clipboard" size={16} color="#333333" />
         <Text style={styles.secondaryButtonText}>Take Quiz</Text>

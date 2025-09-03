@@ -1,4 +1,4 @@
-import TabHeader from '@/components/TabHeader';
+import BaseHeader from '@/components/BaseHeader';
 import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -30,7 +30,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={24} color={color} />
           ),
-          header: () => <TabHeader />,
+          header: () => (
+            <BaseHeader
+              type="tab"
+              title="Good Morning!"
+              subtitle="Ready to learn?"
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -40,7 +46,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Feather name="book" size={24} color={color} />
           ),
-          header: () => <TabHeader />,
+          header: () => (
+            <BaseHeader type="tab" title="My decks" subtitle="6 active decks" />
+          ),
         }}
       />
       <Tabs.Screen
@@ -50,7 +58,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Feather name="pen-tool" size={24} color={color} />
           ),
-          header: () => <TabHeader />,
+          header: () => (
+            <BaseHeader
+              type="tab"
+              title="Study Session"
+              subtitle="Choose what to study today"
+            />
+          ),
         }}
       />
       <Tabs.Screen
