@@ -32,6 +32,31 @@ const MOCK_WORDS: WordCardProps[] = [
       '"The beauty of cherry blossoms is ephemeral, lasting only a few weeks."',
     lastReviewed: '3 days ago',
   },
+  {
+    id: '4',
+    word: 'Mellifluous',
+    difficulty: 'medium',
+    definition: 'A sound that is sweet and smooth, pleasing to hear',
+    example: '"Her mellifluous voice calmed the anxious crowd."',
+    lastReviewed: '5 days ago',
+  },
+  {
+    id: '5',
+    word: 'Pulchritudinous',
+    difficulty: 'hard',
+    definition: 'Having great physical beauty',
+    example: '"The pulchritudinous landscape was a painter\'s dream."',
+    lastReviewed: '1 day ago',
+  },
+  {
+    id: '6',
+    word: 'Gregarious',
+    difficulty: 'easy',
+    status: 'mastered',
+    definition: 'Fond of company; sociable',
+    example: '"He was a gregarious and outgoing person who loved parties."',
+    lastReviewed: '4 hours ago',
+  },
 ];
 
 const WordList: React.FC = () => {

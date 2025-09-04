@@ -1,3 +1,4 @@
+import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.buttonBorderColor,
     marginLeft: 8,
   },
   secondaryButtonText: {

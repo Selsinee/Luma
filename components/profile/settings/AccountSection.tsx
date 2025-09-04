@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.buttonBorderColor,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,

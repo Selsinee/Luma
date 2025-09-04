@@ -60,7 +60,7 @@ export default function AuthScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.appHeader}>
           <Feather name="code" size={48} color="#A9B0D2" />
-          <Text style={styles.appName}>FlashCards</Text>
+          <Text style={styles.appName}>Luma</Text>
           <Text style={styles.appTagline}>Learn smarter, not harder</Text>
         </View>
 
@@ -216,14 +216,17 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F9F9FB' },
   scrollContent: { flexGrow: 1, padding: 20, alignItems: 'center' },
-  appHeader: { alignItems: 'center', marginBottom: 30, marginTop: 20 },
+  appHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
   appName: { fontSize: 28, fontWeight: 'bold', color: '#333', marginTop: 10 },
   appTagline: { fontSize: 16, color: '#666', marginTop: 4 },
   featuresContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 40,
+    marginBottom: 24,
   },
   featureItem: { alignItems: 'center', width: '30%' },
   featureLabel: {
@@ -318,7 +321,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9E9E9E',
     textAlign: 'center',
-    marginTop: 20,
     lineHeight: 18,
   },
 });

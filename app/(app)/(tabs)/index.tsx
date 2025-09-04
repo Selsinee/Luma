@@ -4,12 +4,12 @@ import RecentDecksWidget from '@/components/home/RecentDecksWidget';
 import StatsWidget from '@/components/home/StatsWidget';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Index() {
   const insets = useSafeAreaInsets();
   const [isVisible, setIsVisible] = useState(false);
+  const router = useRouter();
   return (
     <View
       style={{
@@ -54,10 +55,13 @@ export default function Index() {
             <Feather name="plus" size={20} color="#FFFFFF" />
             <Text style={styles.newDeckButtonText}>New Deck</Text>
           </TouchableOpacity>
-          <View style={styles.browseContainer}>
-            <Feather name="search" size={20} color="#8A8A8A" />
-            <TextInput placeholder="Browse" style={styles.browseInput} />
-          </View>
+          <TouchableOpacity
+            style={styles.browseContainer}
+            onPress={() => router.navigate('/(app)/(tabs)/decks')}
+          >
+            <Feather name="search" size={20} color="#333333" />
+            <Text style={styles.browseInput}>Browse</Text>
+          </TouchableOpacity>
         </View>
         <NewWordsWidget />
         <RecentDecksWidget />
@@ -91,15 +95,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.borderColor,
+    borderColor: Colors.buttonBorderColor,
   },
   browseInput: {
     marginLeft: 8,
     fontSize: 16,
-    flex: 1,
+    color: '#333333',
   },
 });

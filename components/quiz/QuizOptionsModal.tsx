@@ -1,3 +1,4 @@
+import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.buttonBorderColor,
   },
   cancelButtonText: {
     color: '#333',
