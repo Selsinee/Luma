@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -16,6 +17,7 @@ const StudyItem: React.FC<StudyItemProps> = ({
   studiedToday,
   progress,
 }) => {
+  const router = useRouter();
   return (
     <TouchableOpacity style={styles.itemContainer}>
       {/* Main content container for everything on the left */}
@@ -37,9 +39,14 @@ const StudyItem: React.FC<StudyItemProps> = ({
       </View>
 
       {/* Arrow Icon on the far right */}
-      <View style={styles.arrowContainer}>
+      <TouchableOpacity
+        style={styles.arrowContainer}
+        onPress={() => {
+          router.navigate(`/deck-details`);
+        }}
+      >
         <Feather name="arrow-right" size={18} color="#555" />
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };

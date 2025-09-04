@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 20,
   },
   activeTabButton: {

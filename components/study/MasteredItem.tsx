@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -18,6 +19,7 @@ const MasteredItem: React.FC<MasteredItemProps> = ({
   wordCount,
   category,
 }) => {
+  const router = useRouter();
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemInfo}>
@@ -35,7 +37,12 @@ const MasteredItem: React.FC<MasteredItemProps> = ({
           {wordCount} words · {category}
         </Text>
       </View>
-      <TouchableOpacity style={styles.finishButton}>
+      <TouchableOpacity
+        style={styles.finishButton}
+        onPress={() => {
+          router.navigate(`/deck-details`);
+        }}
+      >
         <Feather name="zap" size={16} color="#FFFFFF" />
       </TouchableOpacity>
     </View>

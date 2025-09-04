@@ -102,6 +102,11 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: 'center',
     marginTop: -40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   cardIcon: {
     marginBottom: 20,

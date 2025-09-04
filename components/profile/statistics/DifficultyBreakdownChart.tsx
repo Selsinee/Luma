@@ -16,17 +16,10 @@ const LegendItem: React.FC<{ color: string; label: string }> = ({
 );
 
 const DifficultyBreakdownChart: React.FC = () => {
-  // ✨ Updated pastel colors for the donut chart ✨
-  const pastelColors = {
-    easy: '#A3D9B0', // Soft Green
-    medium: '#FFD180', // Soft Orange
-    hard: '#FFAB91', // Soft Red
-  };
-
   const pieData = [
-    { value: 45, color: pastelColors.easy, text: '45%' },
-    { value: 35, color: pastelColors.medium, text: '35%' },
-    { value: 20, color: pastelColors.hard, text: '20%' },
+    { value: 45, color: Colors.pastel.easy, text: '45%' },
+    { value: 35, color: Colors.pastel.medium, text: '35%' },
+    { value: 20, color: Colors.pastel.hard, text: '20%' },
   ];
 
   return (
@@ -48,9 +41,9 @@ const DifficultyBreakdownChart: React.FC = () => {
           isAnimated
         />
         <View style={styles.legendContainer}>
-          <LegendItem color={pastelColors.easy} label="Easy (45%)" />
-          <LegendItem color={pastelColors.medium} label="Medium (35%)" />
-          <LegendItem color={pastelColors.hard} label="Hard (20%)" />
+          <LegendItem color={Colors.pastel.easy} label="Easy (45%)" />
+          <LegendItem color={Colors.pastel.medium} label="Medium (35%)" />
+          <LegendItem color={Colors.pastel.hard} label="Hard (20%)" />
         </View>
       </View>
     </View>

@@ -1,6 +1,7 @@
 // DeckCard.tsx
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -20,6 +21,7 @@ const DeckCard: React.FC<DeckCardProps> = ({
   totalItems,
 }) => {
   const percentage = Math.round((currentProgress / totalItems) * 100);
+  const router = useRouter();
 
   return (
     <View style={styles.cardContainer}>
@@ -51,7 +53,12 @@ const DeckCard: React.FC<DeckCardProps> = ({
       </View>
 
       {/* Bottom Section: Action Button */}
-      <TouchableOpacity style={styles.studyButton}>
+      <TouchableOpacity
+        style={styles.studyButton}
+        onPress={() => {
+          router.navigate(`/deck-details`);
+        }}
+      >
         <Text style={styles.studyButtonText}>Study Now</Text>
       </TouchableOpacity>
     </View>

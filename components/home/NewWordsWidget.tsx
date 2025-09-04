@@ -1,8 +1,9 @@
 // NewWordsScreen.tsx
 import Colors from '@/constants/Colors';
+import { Difficulty } from '@/interfaces';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import WordCard, { Difficulty } from './WordCard';
+import WordCard from './WordCard';
 
 // Mock Data for the list
 const mockWords: {

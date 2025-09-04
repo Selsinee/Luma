@@ -61,9 +61,9 @@ const DeckData: React.FC<DeckDetailsProps> = ({
       <View>
         <Text style={styles.difficultyTitle}>Difficulty Distribution</Text>
         <View style={styles.difficultyCardsRow}>
-          <DifficultyCard count={easyCount} label="Easy" />
-          <DifficultyCard count={mediumCount} label="Medium" />
-          <DifficultyCard count={hardCount} label="Hard" />
+          <DifficultyCard count={easyCount} label="easy" />
+          <DifficultyCard count={mediumCount} label="medium" />
+          <DifficultyCard count={hardCount} label="hard" />
         </View>
       </View>
     </View>

@@ -98,7 +98,12 @@ const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({
         </View>
 
         {/* Action Button */}
-        <TouchableOpacity style={styles.studyButton}>
+        <TouchableOpacity
+          style={styles.studyButton}
+          onPress={() => {
+            router.navigate('/deck-details');
+          }}
+        >
           <Text style={styles.studyButtonText}>Study Now</Text>
         </TouchableOpacity>
       </TouchableOpacity>

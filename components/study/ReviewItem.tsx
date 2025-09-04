@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -18,6 +19,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
   wordCount,
   lastStudied,
 }) => {
+  const router = useRouter();
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemInfo}>
@@ -31,7 +33,12 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
           {wordCount} words · Last: {lastStudied}
         </Text>
       </View>
-      <TouchableOpacity style={styles.studyButton}>
+      <TouchableOpacity
+        style={styles.studyButton}
+        onPress={() => {
+          router.navigate(`/deck-details`);
+        }}
+      >
         <Feather name="book-open" size={16} color="#FFFFFF" />
       </TouchableOpacity>
     </View>

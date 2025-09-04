@@ -46,13 +46,21 @@ const DifficultyBreakdownList: React.FC<DifficultyBreakdownListProps> = ({
       </View>
 
       <View style={styles.listContainer}>
-        <DifficultyRow label="Easy Words" count={easyCount} color="#2E7D32" />
+        <DifficultyRow
+          label="Easy Words"
+          count={easyCount}
+          color={Colors.pastel.easy}
+        />
         <DifficultyRow
           label="Medium Words"
           count={mediumCount}
-          color="#FFC107"
+          color={Colors.pastel.medium}
         />
-        <DifficultyRow label="Hard Words" count={hardCount} color="#D32F2F" />
+        <DifficultyRow
+          label="Hard Words"
+          count={hardCount}
+          color={Colors.pastel.hard}
+        />
       </View>
     </View>
   );
