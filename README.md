@@ -1,50 +1,95 @@
-# Welcome to your Expo app 👋
+# Luma - Flashcard App Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This repository contains the frontend for the Luma flashcard application, built with React Native and Expo. It provides a rich, intuitive mobile experience for users to create decks, study words with flashcards, and track their learning progress.
 
-## Get started
+This application is designed to communicate with the [Luma Backend API](https://github.com/Selsinee/luma-backend.git).
 
-1. Install dependencies
+## Tech Stack 📱
 
-   ```bash
-   npm install
-   ```
+- **Framework**: React Native with Expo (SDK 53)
+- **Language**: TypeScript
+- **Navigation**: Expo Router (~5.1.4)
+- **Animations**: Reanimated (~3.17.4)
+- **Gestures**: React Native Gesture Handler (~2.24.0)
+- **Charts**: `react-native-gifted-charts` (~1.4.64)
+- **Icons**: `@expo/vector-icons` (~14.1.0)
+- **Linting/Formatting**: ESLint & Prettier
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Project Structure
 
-In the output, you'll find options to open the app in a
+The project uses Expo Router's file-based routing system, which organizes screens and layouts within the `app/` directory.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+/luma-frontend/
+├── /app/                   # Main application routes
+│   ├── (app)/              # Routes protected by authentication
+│   │   ├── (tabs)/         # Main tab navigator layout
+│   │   ├── deck-details.tsx
+│   │   └── ...
+│   ├── _layout.tsx
+│   └── index.tsx           # Authentication screen
+│
+├── /assets/                # Fonts, icons, and images
+├── /components/            # Reusable UI components
+├── /constants/             # App-wide constants like colors
+└── ...
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Setup and Installation 🚀
 
-To learn more about developing your project with Expo, look at the following resources:
+Follow these steps to get the development environment running locally.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1. Prerequisites
 
-## Join the community
+- Node.js (LTS version)
+- Git
+- Expo Go app on your physical device (iOS or Android)
+- An account on [expo.dev](https://expo.dev)
 
-Join our community of developers creating universal apps.
+### 2. Clone the Repository
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+git clone https://github.com/Selsinee/Luma.git
+cd Luma
+```
+
+### 3. Install Dependencies
+
+Install all the required npm packages.
+
+```bash
+npm install
+```
+
+### 4. Configure Environment Variables
+
+The app needs to know the URL of the backend API. Create a `.env` file in the root of the project to store this information.
+
+```bash
+# .env
+EXPO_PUBLIC_API_URL="http://<your-local-ip-address>:8000"
+```
+
+> **Important:** To connect to a local server from the Expo Go app, you cannot use `localhost`. You must use your computer's local network IP address (e.g., `192.168.1.10`).
+
+---
+
+## Running the Application
+
+With the setup complete, start the Expo development server.
+
+```bash
+npm start
+```
+
+This will open a new tab in your web browser with a QR code.
+
+1.  Open the **Expo Go** app on your phone.
+2.  Scan the QR code from the browser or terminal.
+3.  The Luma app will load and run on your device.
+
+The app will automatically reload whenever you make changes to the code.
