@@ -27,7 +27,7 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="study/quiz/[deckId]"
+          name="study/quiz/start-quiz"
           options={{
             title: 'Quiz',
             contentStyle: {

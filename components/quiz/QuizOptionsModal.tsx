@@ -147,7 +147,7 @@ export const QuizOptionsModal: React.FC<QuizOptionsModalProps> = ({
   );
 
   const handleStartQuiz = () => {
-    router.navigate('/study/quiz/1');
+    router.navigate('/study/quiz/start-quiz');
     onClose();
   };
 
