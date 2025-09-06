@@ -1,10 +1,11 @@
+import BaseHeader from '@/components/BaseHeader';
 import CreateDeckModal from '@/components/decks/CreateDeckModal';
 import NewWordsWidget from '@/components/home/NewWordsWidget';
 import RecentDecksWidget from '@/components/home/RecentDecksWidget';
 import StatsWidget from '@/components/home/StatsWidget';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ScrollView,
@@ -26,6 +27,17 @@ export default function Index() {
         backgroundColor: '#ffffff',
       }}
     >
+      <Stack.Screen
+        options={{
+          header: () => (
+            <BaseHeader
+              type="tab"
+              title="Good Morning!"
+              subtitle="Ready to learn?"
+            />
+          ),
+        }}
+      />
       <CreateDeckModal
         isVisible={isVisible}
         onClose={() => {

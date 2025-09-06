@@ -1,17 +1,17 @@
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SupportLink from './SupportLink'; // Import the component we just made
 
 const SettingsFooter: React.FC = () => {
-  const router = useRouter();
+  const { logout } = useAuth();
   const handleSignOut = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       {
         text: 'Yes',
         onPress: () => {
-          router.replace('../');
+          logout();
         },
       },
       {

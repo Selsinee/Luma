@@ -22,9 +22,10 @@ export default function TabLayout() {
         },
         sceneStyle: { backgroundColor: '#FFFFFF' },
       }}
+      initialRouteName="home"
     >
       <Tabs.Screen
-        name="index" // This is the file name: index.tsx
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (

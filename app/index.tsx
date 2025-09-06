@@ -1,16 +1,19 @@
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const FeatureItem = ({
   icon,
@@ -35,21 +38,47 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
+  const { login, isLoading, register } = useAuth();
 
-  const handleSignIn = () => {
-    router.replace('/(app)/(tabs)');
+  const fullNameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
+
+  const handleSignIn = async () => {
+    try {
+      await login({
+        username: email,
+        password: password,
+        grant_type: 'password',
+      });
+    } catch (error) {
+      console.log('Login failed:', error);
+      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
+    }
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-    Alert.alert('Account Created', `Name: ${fullName}\nEmail: ${email}`);
+
+    try {
+      await register({
+        full_name: fullName,
+        email: email,
+        password: password,
+      });
+    } catch (error) {
+      console.log('Registration failed:', error);
+      // You can provide a more specific error message if your API returns one
+      Alert.alert('Error', 'Failed to create account.');
+    }
   };
 
   const handleGoogleAuth = () => {
-    router.replace('/(app)/(tabs)');
+    router.replace('/(app)/(tabs)/home');
   };
 
   // --- Dynamic Content based on Auth Mode ---
@@ -57,7 +86,14 @@ export default function AuthScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        scrollEnabled={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
+        enableOnAndroid={true}
+      >
         <View style={styles.appHeader}>
           <Feather name="code" size={48} color="#A9B0D2" />
           <Text style={styles.appName}>Luma</Text>
@@ -101,10 +137,13 @@ export default function AuthScreen() {
               <View style={styles.inputField}>
                 <Feather name="user" size={20} color="#9E9E9E" />
                 <TextInput
+                  ref={fullNameRef}
                   style={styles.textInput}
                   placeholder="Enter your full name"
                   value={fullName}
                   onChangeText={setFullName}
+                  returnKeyType="next"
+                  onSubmitEditing={() => emailRef.current?.focus()}
                 />
               </View>
             </>
@@ -114,12 +153,17 @@ export default function AuthScreen() {
           <View style={styles.inputField}>
             <Feather name="mail" size={20} color="#9E9E9E" />
             <TextInput
+              ref={emailRef}
               style={styles.textInput}
               placeholder="Enter your email"
               keyboardType="email-address"
+              autoComplete="email"
+              textContentType="emailAddress"
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current?.focus()}
             />
           </View>
 
@@ -127,11 +171,21 @@ export default function AuthScreen() {
           <View style={styles.inputField}>
             <Feather name="lock" size={20} color="#9E9E9E" />
             <TextInput
+              ref={passwordRef}
               style={styles.textInput}
               placeholder="Enter your password"
               secureTextEntry={!showPassword}
+              textContentType={isSignIn ? 'newPassword' : 'password'}
               value={password}
               onChangeText={setPassword}
+              returnKeyType={isSignIn ? 'done' : 'next'}
+              onSubmitEditing={() => {
+                if (isSignIn) {
+                  handleSignIn();
+                } else {
+                  confirmPasswordRef.current?.focus();
+                }
+              }}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Feather
@@ -153,11 +207,15 @@ export default function AuthScreen() {
               <View style={styles.inputField}>
                 <Feather name="lock" size={20} color="#9E9E9E" />
                 <TextInput
+                  ref={confirmPasswordRef}
                   style={styles.textInput}
                   placeholder="Confirm your password"
                   secureTextEntry={!showConfirmPassword}
+                  textContentType="password"
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
+                  returnKeyType="done"
+                  onSubmitEditing={() => console.log('done')}
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -175,17 +233,24 @@ export default function AuthScreen() {
           {/* --- Main Action Button (Conditional) --- */}
           <TouchableOpacity
             style={styles.signInButton}
+            disabled={isLoading}
             onPress={isSignIn ? handleSignIn : handleCreateAccount}
           >
-            <Text style={styles.signInButtonText}>
-              {isSignIn ? 'Sign In' : 'Create Account'}
-            </Text>
-            <Feather
-              name="arrow-right"
-              size={18}
-              color="#FFFFFF"
-              style={styles.signInArrow}
-            />
+            {isLoading ? (
+              <ActivityIndicator color={'#FFFFFF'} />
+            ) : (
+              <>
+                <Text style={styles.signInButtonText}>
+                  {isSignIn ? 'Sign In' : 'Create Account'}
+                </Text>
+                <Feather
+                  name="arrow-right"
+                  size={18}
+                  color="#FFFFFF"
+                  style={styles.signInArrow}
+                />
+              </>
+            )}
           </TouchableOpacity>
 
           {/* --- Bottom Link to Switch Modes (Conditional) --- */}
@@ -208,7 +273,7 @@ export default function AuthScreen() {
         <Text style={styles.footerText}>
           By continuing, you agree to our Terms of Service and Privacy Policy
         </Text>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
