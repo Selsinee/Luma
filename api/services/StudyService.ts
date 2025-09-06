@@ -17,7 +17,7 @@ export class StudyService {
      * @returns StudySession Successful Response
      * @throws ApiError
      */
-    public static createStudySessionStudySessionsPost(
+    public static logStudySession(
         requestBody: StudySessionCreate,
     ): CancelablePromise<StudySession> {
         return __request(OpenAPI, {
@@ -38,7 +38,7 @@ export class StudyService {
      * @returns UserWordProgress Successful Response
      * @throws ApiError
      */
-    public static updateWordProgressStudyProgressWordIdPut(
+    public static updateWordProgress(
         wordId: string,
         requestBody: UserWordProgressUpdate,
     ): CancelablePromise<UserWordProgress> {

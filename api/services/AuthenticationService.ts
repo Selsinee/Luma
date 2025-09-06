@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Body_login_for_access_token_auth_login_post } from '../models/Body_login_for_access_token_auth_login_post';
+import type { Body_login } from '../models/Body_login';
 import type { GoogleToken } from '../models/GoogleToken';
 import type { Token } from '../models/Token';
 import type { UserCreate } from '../models/UserCreate';
@@ -17,7 +17,7 @@ export class AuthenticationService {
      * @returns Token Successful Response
      * @throws ApiError
      */
-    public static registerUserAuthRegisterPost(
+    public static register(
         requestBody: UserCreate,
     ): CancelablePromise<Token> {
         return __request(OpenAPI, {
@@ -38,8 +38,8 @@ export class AuthenticationService {
      * @returns Token Successful Response
      * @throws ApiError
      */
-    public static loginForAccessTokenAuthLoginPost(
-        formData: Body_login_for_access_token_auth_login_post,
+    public static login(
+        formData: Body_login,
     ): CancelablePromise<Token> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -58,7 +58,7 @@ export class AuthenticationService {
      * @returns Token Successful Response
      * @throws ApiError
      */
-    public static authGoogleAuthGooglePost(
+    public static loginGoogle(
         requestBody: GoogleToken,
     ): CancelablePromise<Token> {
         return __request(OpenAPI, {

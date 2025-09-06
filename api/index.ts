@@ -8,7 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AchievementDetail } from './models/AchievementDetail';
-export type { Body_login_for_access_token_auth_login_post } from './models/Body_login_for_access_token_auth_login_post';
+export type { Body_login } from './models/Body_login';
 export type { Deck } from './models/Deck';
 export type { DeckCreate } from './models/DeckCreate';
 export type { DeckDetail } from './models/DeckDetail';

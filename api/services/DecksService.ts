@@ -17,7 +17,7 @@ export class DecksService {
      * @returns Deck Successful Response
      * @throws ApiError
      */
-    public static createDeckDecksPost(
+    public static createDeck(
         requestBody: DeckCreate,
     ): CancelablePromise<Deck> {
         return __request(OpenAPI, {
@@ -38,7 +38,7 @@ export class DecksService {
      * @returns Deck Successful Response
      * @throws ApiError
      */
-    public static readDecksForUserDecksGet(
+    public static getDecksByUser(
         category?: (string | null),
     ): CancelablePromise<Array<Deck>> {
         return __request(OpenAPI, {
@@ -59,7 +59,7 @@ export class DecksService {
      * @returns DeckDetail Successful Response
      * @throws ApiError
      */
-    public static readDeckDecksDeckIdGet(
+    public static getDeckById(
         deckId: string,
     ): CancelablePromise<DeckDetail> {
         return __request(OpenAPI, {
@@ -81,7 +81,7 @@ export class DecksService {
      * @returns Deck Successful Response
      * @throws ApiError
      */
-    public static updateDeckDecksDeckIdPut(
+    public static updateDeck(
         deckId: string,
         requestBody: DeckUpdate,
     ): CancelablePromise<Deck> {
@@ -105,7 +105,7 @@ export class DecksService {
      * @returns Deck Successful Response
      * @throws ApiError
      */
-    public static deleteDeckDecksDeckIdDelete(
+    public static deleteDeck(
         deckId: string,
     ): CancelablePromise<Deck> {
         return __request(OpenAPI, {

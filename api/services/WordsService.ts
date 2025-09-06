@@ -18,7 +18,7 @@ export class WordsService {
      * @returns Word Successful Response
      * @throws ApiError
      */
-    public static createWordForDeckDecksDeckIdWordsPost(
+    public static createWord(
         deckId: string,
         requestBody: WordCreate,
     ): CancelablePromise<Word> {
@@ -45,7 +45,7 @@ export class WordsService {
      * @returns Word Successful Response
      * @throws ApiError
      */
-    public static updateWordDecksDeckIdWordsWordIdPut(
+    public static updateWord(
         deckId: string,
         wordId: string,
         requestBody: WordUpdate,
@@ -73,7 +73,7 @@ export class WordsService {
      * @returns Word Successful Response
      * @throws ApiError
      */
-    public static deleteWordDecksDeckIdWordsWordIdDelete(
+    public static deleteWord(
         deckId: string,
         wordId: string,
     ): CancelablePromise<Word> {

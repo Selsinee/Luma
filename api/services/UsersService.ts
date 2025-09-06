@@ -17,7 +17,7 @@ export class UsersService {
      * @returns User Successful Response
      * @throws ApiError
      */
-    public static readUsersMeUsersMeGet(): CancelablePromise<User> {
+    public static getUser(): CancelablePromise<User> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me',
@@ -30,7 +30,7 @@ export class UsersService {
      * @returns User Successful Response
      * @throws ApiError
      */
-    public static updateUserMeUsersMePut(
+    public static updateUser(
         requestBody: UserProfileUpdate,
     ): CancelablePromise<User> {
         return __request(OpenAPI, {
@@ -50,7 +50,7 @@ export class UsersService {
      * @returns User Successful Response
      * @throws ApiError
      */
-    public static updateUserMeSettingsUsersMeSettingsPut(
+    public static updateSettings(
         requestBody: UserSettingsUpdate,
     ): CancelablePromise<User> {
         return __request(OpenAPI, {
@@ -69,7 +69,7 @@ export class UsersService {
      * @returns AchievementDetail Successful Response
      * @throws ApiError
      */
-    public static readUserMeAchievementsUsersMeAchievementsGet(): CancelablePromise<Array<AchievementDetail>> {
+    public static getAchievements(): CancelablePromise<Array<AchievementDetail>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/achievements',
@@ -81,7 +81,7 @@ export class UsersService {
      * @returns UserStats Successful Response
      * @throws ApiError
      */
-    public static readUserMeStatsUsersMeStatsGet(): CancelablePromise<UserStats> {
+    public static getStats(): CancelablePromise<UserStats> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/stats',
