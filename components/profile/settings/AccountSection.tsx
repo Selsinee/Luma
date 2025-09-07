@@ -1,24 +1,23 @@
+import Avatar from '@/components/Avatar';
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import { format } from 'date-fns';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { EditProfileModal } from './EditProfileModal';
 
-// Props for the Account Section component
-interface AccountSectionProps {
-  userName: string;
-  userEmail: string;
-  memberSince: string; // e.g., "January 15, 2024"
-  onEditPress?: () => void; // Optional function for the Edit button
-}
+const AccountSection: React.FC = () => {
+  const [isEditProfileVisible, setIsEditProfileVisible] = useState(false);
+  const { user } = useAuth();
 
-const AccountSection: React.FC<AccountSectionProps> = ({
-  userName,
-  userEmail,
-  memberSince,
-  onEditPress,
-}) => {
+  console.log(user);
   return (
     <View style={styles.card}>
+      <EditProfileModal
+        isVisible={isEditProfileVisible}
+        onClose={() => setIsEditProfileVisible(false)}
+      />
       {/* Header */}
       <View style={styles.header}>
         <Feather name="user" size={18} color="#555" />
@@ -29,18 +28,27 @@ const AccountSection: React.FC<AccountSectionProps> = ({
       <View style={styles.userInfoRow}>
         {/* Avatar Placeholder */}
         <View style={styles.avatarPlaceholder}>
-          <Feather name="user" size={30} color="#A9B0D2" />
+          <Avatar avatarUrl={user?.avatar_url} size={60} />
         </View>
 
         {/* Text Details */}
         <View style={styles.textDetails}>
-          <Text style={styles.userName}>{userName}</Text>
-          <Text style={styles.userEmail}>{userEmail}</Text>
-          <Text style={styles.memberSince}>Member since {memberSince}</Text>
+          <Text style={styles.userName}>{user?.full_name}</Text>
+          <Text style={styles.userEmail}>{user?.email}</Text>
+          {user?.created_at && (
+            <Text style={styles.memberSince}>
+              Member since {format(new Date(user?.created_at), 'MMM d, yyyy')}
+            </Text>
+          )}
         </View>
 
         {/* Edit Button */}
-        <TouchableOpacity style={styles.editButton} onPress={onEditPress}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => {
+            setIsEditProfileVisible(true);
+          }}
+        >
           <Feather name="edit-2" size={16} color="#333" />
           <Text style={styles.editButtonText}>Edit</Text>
         </TouchableOpacity>

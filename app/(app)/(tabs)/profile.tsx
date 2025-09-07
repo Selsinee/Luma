@@ -38,16 +38,9 @@ const AchievementsContent = () => <AchievementsList />;
 // --- Content for the 'Settings' tab ---
 const SettingsContent = () => (
   <>
-    <AccountSection
-      userName="Alex Johnson"
-      userEmail="alex@gmail.com"
-      memberSince="January 15, 2024"
-      onEditPress={() => {
-        console.log('Edit button pressed');
-      }}
-    />
+    <AccountSection />
     <PreferencesSection />
-    <StudySettings dailyGoal={10} onChangeGoalPress={() => {}} />
+    <StudySettings />
     <SettingsFooter />
   </>
 );
@@ -61,13 +54,7 @@ export default function ProfileScreen() {
       style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={styles.scrollContent}
     >
-      <UserProfileHeader
-        name="Alex Johnson"
-        bio="Learning enthusiast"
-        streak={7}
-        level={12}
-        avatarUrl={null}
-      />
+      <UserProfileHeader />
       <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'stats' && <StatsContent />}

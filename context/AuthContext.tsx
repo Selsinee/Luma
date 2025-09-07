@@ -10,7 +10,7 @@ import {
   User,
   UserCreate,
   UsersService,
-} from '../api'; // 1. Import OpenAPI
+} from '../api';
 
 interface AuthContextType {
   user: User | null;
@@ -18,32 +18,40 @@ interface AuthContextType {
   login: (data: Body_login) => Promise<void>;
   register: (data: UserCreate) => Promise<void>;
   logout: () => void;
-  updateUser: (newUser: User) => void;
+  refetchUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// --- Configure the API Base URL ---
-// It's good practice to set the base URL for your API client from your environment variables.
 OpenAPI.BASE = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.0.105:8000';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 1. Create a reusable function to fetch user data
+  const fetchUser = async () => {
+    try {
+      const currentUser = await UsersService.getUser();
+      setUser(currentUser);
+    } catch (e) {
+      console.log('Failed to fetch user.', e);
+      // If fetching fails, it likely means the token is invalid, so log out.
+      // await logout();
+    }
+  };
+
   useEffect(() => {
-    // Check for a token on app startup
+    console.log('useAuth mount');
     const loadUser = async () => {
       try {
         const token = await SecureStore.getItemAsync('authToken');
         if (token) {
-          // 2. Configure the API client with the token for this session
           OpenAPI.TOKEN = token;
-          const currentUser = await UsersService.getUser();
-          setUser(currentUser);
+          await fetchUser();
         }
       } catch (e) {
-        console.log('Failed to load user.', e);
+        console.log('Failed to load token.', e);
       } finally {
         setIsLoading(false);
       }
@@ -91,33 +99,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateUser = (newUser: User) => {
-    setUser(newUser);
+  const refetchUser = async () => {
+    try {
+      setIsLoading(true);
+      await fetchUser();
+    } catch (e) {
+      console.error('Failed to refetch user.', e);
+      Alert.alert('Error', `Failed to refetch user data. ${errorGenerator(e)}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, logout, register, updateUser }}
+      value={{ user, isLoading, login, logout, register, refetchUser }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
 
-/**
- * @hook useAuth
- *
- * This hook provides access to the global authentication context. It is the
- * single source of truth for the user's authentication status and session data.
- *
- * It should be used for:
- * - Checking if a user is currently logged in.
- * - Accessing basic user data for display in components like headers.
- * - Calling the `login` and `logout` functions to manage the session.
- *
- * This hook does not handle fetching or refetching detailed profile data;
- * for that, use the `useUser` hook on data-focused screens.
- */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

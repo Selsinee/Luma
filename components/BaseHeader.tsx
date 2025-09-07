@@ -1,8 +1,6 @@
-import IcnDefaultProfile from '@/assets/svgs/IcnDefaultProfile';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -14,6 +12,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Avatar from './Avatar';
 
 interface BaseHeaderProps {
   type: 'tab' | 'page';
@@ -34,26 +33,10 @@ const BaseHeader = ({
   const router = useRouter();
   const { user } = useAuth();
 
-  const renderAvatar = () => {
-    // If the user data is available and has an avatar, display it
-    if (user?.avatar_url) {
-      return (
-        <Image
-          source={{ uri: user.avatar_url }}
-          style={styles.avatarImage}
-          placeholder="L6PZfSi_.AyE_3t7t7Rk00Rj~p00" // A generic blurhash placeholder
-          transition={300}
-        />
-      );
-    }
-    // Otherwise, show the default profile icon
-    return <IcnDefaultProfile width={40} height={40} />;
-  };
-
   return (
     <View style={[styles.wrapper, { marginTop: insets.top }, style]}>
       {type === 'tab' ? (
-        renderAvatar() // 4. Render the avatar logic
+        <Avatar avatarUrl={user?.avatar_url} size={40} />
       ) : (
         <TouchableOpacity style={styles.iconButton} onPress={router.back}>
           <Feather name="chevron-left" size={24} color="#333" />
@@ -94,12 +77,5 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 4,
-  },
-  // 5. Add new style for the avatar image
-  avatarImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // Make it a circle
-    backgroundColor: '#E8E8F0', // A light gray placeholder background
   },
 });

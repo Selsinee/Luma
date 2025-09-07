@@ -1,18 +1,12 @@
 import Colors from '@/constants/Colors';
-import { useUser } from '@/hooks/useUser'; // 1. Import the useUser hook
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image'; // 2. Use expo-image
 import React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 const UserProfileHeader = () => {
-  const { user, isLoading, error } = useUser();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -22,7 +16,7 @@ const UserProfileHeader = () => {
     );
   }
 
-  if (error || !user) {
+  if (!user) {
     return (
       <View style={[styles.card, styles.centerContent]}>
         <Text style={styles.errorText}>Could not load profile.</Text>
@@ -39,9 +33,6 @@ const UserProfileHeader = () => {
           placeholder="L6PZfSi_.AyE_3t7t7Rk00Rj~p00"
           transition={300}
         />
-        <TouchableOpacity style={styles.cameraButton}>
-          <Feather name="camera" size={14} color="#FFFFFF" />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.infoContainer}>
@@ -90,16 +81,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 40,
     backgroundColor: '#E8E8F0',
-  },
-  cameraButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: Colors.primary,
-    borderRadius: 12,
-    padding: 6,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
   },
   infoContainer: {
     flex: 1,

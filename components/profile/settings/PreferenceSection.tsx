@@ -1,4 +1,5 @@
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -8,9 +9,16 @@ const Separator = () => <View style={styles.separator} />;
 
 const PreferencesSection: React.FC = () => {
   // State for each toggle switch
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const { user } = useAuth();
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    !!user?.notifications_enabled,
+  );
+  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(
+    !!user?.sound_effects_enabled,
+  );
+  const [darkModeEnabled, setDarkModeEnabled] = useState(
+    !!user?.dark_mode_enabled,
+  );
 
   return (
     <View style={styles.card}>

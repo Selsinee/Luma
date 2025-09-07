@@ -47,7 +47,7 @@ export default function AuthScreen() {
 
   const handleSignIn = async () => {
     await login({
-      username: email,
+      username: email.toLocaleLowerCase(),
       password: password,
       grant_type: 'password',
     });

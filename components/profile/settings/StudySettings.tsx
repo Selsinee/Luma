@@ -1,20 +1,13 @@
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Props for the Study Settings component
-interface StudySettingsProps {
-  dailyGoal: number;
-  onChangeGoalPress?: () => void; // Optional callback for the button
-}
+const StudySettings: React.FC = () => {
+  const { user } = useAuth();
 
-const StudySettings: React.FC<StudySettingsProps> = ({
-  dailyGoal,
-  onChangeGoalPress,
-}) => {
-  // Round the goal to the nearest integer for display
-  const displayGoal = Math.round(dailyGoal);
+  const onChangeGoalPress = () => {};
 
   return (
     <View style={styles.card}>
@@ -28,7 +21,7 @@ const StudySettings: React.FC<StudySettingsProps> = ({
       <View style={styles.goalContainer}>
         <Text style={styles.goalLabel}>Daily Goal</Text>
         <View style={styles.goalValueRow}>
-          <Text style={styles.goalValue}>{displayGoal}</Text>
+          <Text style={styles.goalValue}>{user?.daily_goal}</Text>
           <Text style={styles.goalUnit}>words per day</Text>
         </View>
       </View>
