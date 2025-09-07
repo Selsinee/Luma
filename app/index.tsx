@@ -46,16 +46,11 @@ export default function AuthScreen() {
   const confirmPasswordRef = useRef<TextInput>(null);
 
   const handleSignIn = async () => {
-    try {
-      await login({
-        username: email,
-        password: password,
-        grant_type: 'password',
-      });
-    } catch (error) {
-      console.log('Login failed:', error);
-      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
-    }
+    await login({
+      username: email,
+      password: password,
+      grant_type: 'password',
+    });
   };
 
   const handleCreateAccount = async () => {
@@ -64,17 +59,11 @@ export default function AuthScreen() {
       return;
     }
 
-    try {
-      await register({
-        full_name: fullName,
-        email: email,
-        password: password,
-      });
-    } catch (error) {
-      console.log('Registration failed:', error);
-      // You can provide a more specific error message if your API returns one
-      Alert.alert('Error', 'Failed to create account.');
-    }
+    await register({
+      full_name: fullName,
+      email: email,
+      password: password,
+    });
   };
 
   const handleGoogleAuth = () => {

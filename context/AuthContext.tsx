@@ -1,6 +1,8 @@
 // context/AuthContext.tsx
+import errorGenerator from '@/utilities/errorGenerator';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import {
   AuthenticationService,
   Body_login,
@@ -57,7 +59,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       OpenAPI.TOKEN = response.access_token;
       setUser(response.user);
     } catch (e) {
-      console.log('Failed to process login.', e);
+      console.log('Failed to process login.', errorGenerator(e));
+      Alert.alert('Error', `Failed to sign in. ${errorGenerator(e)}`);
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +74,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       OpenAPI.TOKEN = response.access_token;
       setUser(response.user);
     } catch (e) {
-      console.log('Failed to register.', e);
+      console.log('Failed to register.', errorGenerator(e));
+      Alert.alert('Error', `Failed to create account. ${errorGenerator(e)}`);
     } finally {
       setIsLoading(false);
     }
