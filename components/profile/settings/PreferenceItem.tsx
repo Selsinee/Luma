@@ -10,6 +10,7 @@ interface PreferenceItemProps {
   subtitle: string;
   isEnabled: boolean;
   onToggle: (value: boolean) => void;
+  isLoading?: boolean;
 }
 
 const PreferenceItem: React.FC<PreferenceItemProps> = ({
@@ -18,6 +19,7 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
   subtitle,
   isEnabled,
   onToggle,
+  isLoading,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,6 +34,7 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
         ios_backgroundColor="#E0E0E0"
         onValueChange={onToggle}
         value={isEnabled}
+        disabled={isLoading}
       />
     </View>
   );

@@ -1,5 +1,5 @@
 // context/AuthContext.tsx
-import errorGenerator from '@/utilities/errorGenerator';
+import errorGenerator from '@/utils/errorGenerator';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -19,6 +19,7 @@ interface AuthContextType {
   register: (data: UserCreate) => Promise<void>;
   logout: () => void;
   refetchUser: () => Promise<void>;
+  updateUser: (newUser: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -111,9 +112,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateUser = (newUser: User) => {
+    setUser(newUser);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, logout, register, refetchUser }}
+      value={{
+        user,
+        isLoading,
+        login,
+        logout,
+        register,
+        refetchUser,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

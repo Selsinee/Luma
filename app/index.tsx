@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Logo from '../assets/images/logo.svg';
 
 const FeatureItem = ({
   icon,
@@ -29,7 +30,6 @@ const FeatureItem = ({
 );
 
 export default function AuthScreen() {
-  // --- State Management ---
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -84,8 +84,7 @@ export default function AuthScreen() {
         enableOnAndroid={true}
       >
         <View style={styles.appHeader}>
-          <Feather name="code" size={48} color="#A9B0D2" />
-          <Text style={styles.appName}>Luma</Text>
+          <Logo width={180} height={180} />
           <Text style={styles.appTagline}>Learn smarter, not harder</Text>
         </View>
 

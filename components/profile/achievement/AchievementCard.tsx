@@ -1,4 +1,7 @@
+import { AchievementDetail } from '@/api';
+import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -12,26 +15,26 @@ export interface AchievementCardProps {
   earnedDate?: string; // Optional, only for unlocked achievements
 }
 
-const AchievementCard: React.FC<AchievementCardProps> = ({
+const AchievementCard: React.FC<AchievementDetail> = ({
   title,
   description,
-  iconName,
-  isUnlocked,
-  earnedDate,
+  icon_name,
+  is_unlocked,
+  earned_at,
 }) => {
   return (
-    <View style={[styles.card, !isUnlocked && styles.lockedCard]}>
+    <View style={[styles.card, !is_unlocked && styles.lockedCard]}>
       <View style={styles.iconContainer}>
         <Feather
-          name={iconName}
+          name={icon_name as any}
           size={24}
-          color={isUnlocked ? '#6A67F3' : '#B0B0B0'}
+          color={is_unlocked ? Colors.primaryDark : '#B0B0B0'}
         />
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{title}</Text>
-          {isUnlocked && (
+          {is_unlocked && (
             <Feather
               name="check-circle"
               size={16}
@@ -41,8 +44,10 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
           )}
         </View>
         <Text style={styles.description}>{description}</Text>
-        {isUnlocked && earnedDate && (
-          <Text style={styles.earnedDate}>Earned on {earnedDate}</Text>
+        {is_unlocked && earned_at && (
+          <Text style={styles.earnedDate}>
+            Earned on {format(new Date(earned_at), 'DD MMM YYYY')}
+          </Text>
         )}
       </View>
     </View>

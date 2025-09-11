@@ -19,13 +19,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const StatsContent = () => (
   <>
     <SummaryCards />
-    <WeeklyGoalProgress currentWords={131} weeklyGoal={50} />
-    <AllTimeStatsGrid
-      studyTime="156h"
-      accuracy={87}
-      bestStreak={23}
-      daysActive={185}
-    />
+    <WeeklyGoalProgress />
+    <AllTimeStatsGrid />
     <WeeklyActivityChart />
     <MonthlyProgressChart />
     <DifficultyBreakdownChart />

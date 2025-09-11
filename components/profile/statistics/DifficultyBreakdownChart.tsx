@@ -1,10 +1,10 @@
 import Colors from '@/constants/Colors';
+import { useUserStats } from '@/hooks/useUserStats';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { PieChart } from 'react-native-gifted-charts';
+import { PieChart, pieDataItem } from 'react-native-gifted-charts';
 
-// Component for a single legend item
 const LegendItem: React.FC<{ color: string; label: string }> = ({
   color,
   label,
@@ -16,11 +16,27 @@ const LegendItem: React.FC<{ color: string; label: string }> = ({
 );
 
 const DifficultyBreakdownChart: React.FC = () => {
-  const pieData = [
-    { value: 45, color: Colors.pastel.easy, text: '45%' },
-    { value: 35, color: Colors.pastel.medium, text: '35%' },
-    { value: 20, color: Colors.pastel.hard, text: '20%' },
-  ];
+  const { data } = useUserStats();
+  const { difficulty_breakdown } = data ?? {};
+  const pieData: pieDataItem[] = useMemo(() => {
+    const data: pieDataItem[] = [];
+    data.push({
+      value: difficulty_breakdown?.easy ?? 0,
+      color: Colors.pastel.easy,
+      text: `${difficulty_breakdown?.easy ?? 0}%`,
+    });
+    data.push({
+      value: difficulty_breakdown?.medium ?? 0,
+      color: Colors.pastel.medium,
+      text: `${difficulty_breakdown?.medium ?? 0}%`,
+    });
+    data.push({
+      value: difficulty_breakdown?.hard ?? 0,
+      color: Colors.pastel.hard,
+      text: `${difficulty_breakdown?.hard ?? 0}%`,
+    });
+    return data;
+  }, [difficulty_breakdown]);
 
   return (
     <View style={styles.card}>
@@ -41,9 +57,18 @@ const DifficultyBreakdownChart: React.FC = () => {
           isAnimated
         />
         <View style={styles.legendContainer}>
-          <LegendItem color={Colors.pastel.easy} label="Easy (45%)" />
-          <LegendItem color={Colors.pastel.medium} label="Medium (35%)" />
-          <LegendItem color={Colors.pastel.hard} label="Hard (20%)" />
+          <LegendItem
+            color={Colors.pastel.easy}
+            label={`Easy (${difficulty_breakdown?.easy ?? 0}%)`}
+          />
+          <LegendItem
+            color={Colors.pastel.medium}
+            label={`Medium (${difficulty_breakdown?.medium ?? 0}%)`}
+          />
+          <LegendItem
+            color={Colors.pastel.hard}
+            label={`Hard (${difficulty_breakdown?.hard ?? 0}%)`}
+          />
         </View>
       </View>
     </View>

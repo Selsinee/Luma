@@ -1,7 +1,8 @@
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
+import { useUpdateUser } from '@/hooks/useUpdateUser';
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import PreferenceItem from './PreferenceItem';
 
@@ -9,16 +10,30 @@ const Separator = () => <View style={styles.separator} />;
 
 const PreferencesSection: React.FC = () => {
   // State for each toggle switch
-  const { user } = useAuth();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(
-    !!user?.notifications_enabled,
-  );
-  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(
-    !!user?.sound_effects_enabled,
-  );
-  const [darkModeEnabled, setDarkModeEnabled] = useState(
-    !!user?.dark_mode_enabled,
-  );
+  const { user, updateUser } = useAuth();
+  const { updateUserSettings, isLoading } = useUpdateUser();
+
+  const handleToggle = async (
+    key:
+      | 'notifications_enabled'
+      | 'sound_effects_enabled'
+      | 'dark_mode_enabled',
+    value: boolean,
+  ) => {
+    if (!user) return;
+
+    // 1. Optimistically update the UI immediately
+    const originalUser = { ...user };
+    updateUser({ ...user, [key]: value });
+
+    // 2. Make the API call in the background
+    const success = await updateUserSettings({ [key]: value });
+
+    // 3. If the API call fails, revert the change and show an error
+    if (!success) {
+      updateUser(originalUser);
+    }
+  };
 
   return (
     <View style={styles.card}>
@@ -31,24 +46,24 @@ const PreferencesSection: React.FC = () => {
         iconName="bell"
         title="Notifications"
         subtitle="Study reminders and achievements"
-        isEnabled={notificationsEnabled}
-        onToggle={setNotificationsEnabled}
+        isEnabled={!!user?.notifications_enabled}
+        onToggle={value => handleToggle('notifications_enabled', value)}
       />
       <Separator />
       <PreferenceItem
         iconName="volume-2"
         title="Sound Effects"
         subtitle="Audio feedback during study"
-        isEnabled={soundEffectsEnabled}
-        onToggle={setSoundEffectsEnabled}
+        isEnabled={!!user?.sound_effects_enabled}
+        onToggle={value => handleToggle('sound_effects_enabled', value)}
       />
       <Separator />
       <PreferenceItem
         iconName="moon"
         title="Dark Mode"
         subtitle="Switch to dark theme"
-        isEnabled={darkModeEnabled}
-        onToggle={setDarkModeEnabled}
+        isEnabled={!!user?.dark_mode_enabled}
+        onToggle={value => handleToggle('dark_mode_enabled', value)}
       />
     </View>
   );

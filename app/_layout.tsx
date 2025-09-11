@@ -1,7 +1,19 @@
 // app/_layout.tsx
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 const InitialLayout = () => {
   const { user, isLoading } = useAuth();
@@ -43,10 +55,18 @@ const InitialLayout = () => {
   );
 };
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <InitialLayout />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <GestureHandlerRootView>
+          <BottomSheetModalProvider>
+            <InitialLayout />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

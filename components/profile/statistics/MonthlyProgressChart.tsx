@@ -1,35 +1,35 @@
+import Colors from '@/constants/Colors';
+import { useUserStats } from '@/hooks/useUserStats';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { LineChart } from 'react-native-gifted-charts';
+import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 
 const MonthlyProgressChart: React.FC = () => {
-  // Data for the line chart, matching the UI
-  const lineData = [
-    { value: 240, label: 'Jan' },
-    { value: 290, label: 'Feb' },
-    { value: 380, label: 'Mar' },
-    { value: 300, label: 'Apr' },
-    { value: 450, label: 'May' },
-    { value: 410, label: 'Jun' },
-  ];
+  const { data } = useUserStats();
+  const { monthly_progress = [] } = data ?? {};
+  const lineData: lineDataItem[] = useMemo(() => {
+    return monthly_progress.map(w => ({
+      label: w.month,
+      value: w.words_studied,
+    }));
+  }, [monthly_progress]);
 
   return (
     <View style={styles.card}>
       <View style={styles.titleContainer}>
-        <Feather name="trending-up" size={18} color="#A9B0D2" />
+        <Feather name="trending-up" size={18} color={Colors.primary} />
         <Text style={styles.title}>6-Month Progress</Text>
       </View>
 
       <View style={styles.chartContainer}>
         <LineChart
           data={lineData}
-          curved // Makes the line curved
+          curved
           isAnimated
-          // Line and Data Point Styling
-          color="#A9B0D2"
+          color={Colors.primary}
           thickness={3}
-          dataPointsColor="#A9B0D2"
+          dataPointsColor={Colors.primary}
           dataPointsRadius={5}
           // Y-Axis Configuration
           yAxisTextStyle={styles.axisLabel}

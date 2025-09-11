@@ -1,35 +1,32 @@
+import { useAuth } from '@/context/AuthContext';
+import { useUserStats } from '@/hooks/useUserStats';
+import { formatStudyTime } from '@/utils/formatStudyTime';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import ProfileStatCard from './ProfileStatCard';
 
-// Props for the main widget
-interface AllTimeStatsGridProps {
-  studyTime: string; // e.g., "156h"
-  accuracy: number; // e.g., 87
-  bestStreak: number;
-  daysActive: number;
-}
-
-const AllTimeStatsGrid: React.FC<AllTimeStatsGridProps> = ({
-  studyTime,
-  accuracy,
-  bestStreak,
-  daysActive,
-}) => {
+const AllTimeStatsGrid: React.FC = () => {
+  const { data } = useUserStats();
+  const {
+    accuracy_rate = 0,
+    days_active = 0,
+    study_time_seconds = 0,
+  } = data ?? {};
+  const { user } = useAuth();
   return (
     <View style={styles.gridContainer}>
       <View style={styles.row}>
         <View style={styles.cardWrapper}>
           <ProfileStatCard
             iconName="clock"
-            value={studyTime}
+            value={formatStudyTime(study_time_seconds)}
             label="Study Time"
           />
         </View>
         <View style={styles.cardWrapper}>
           <ProfileStatCard
             iconName="trending-up"
-            value={`${accuracy}%`}
+            value={`${accuracy_rate}%`}
             label="Accuracy"
           />
         </View>
@@ -38,14 +35,14 @@ const AllTimeStatsGrid: React.FC<AllTimeStatsGridProps> = ({
         <View style={styles.cardWrapper}>
           <ProfileStatCard
             iconName="zap"
-            value={bestStreak.toString()}
+            value={user?.best_streak.toString() ?? '0'}
             label="Best Streak"
           />
         </View>
         <View style={styles.cardWrapper}>
           <ProfileStatCard
             iconName="calendar"
-            value={daysActive.toString()}
+            value={days_active?.toString()}
             label="Days Active"
           />
         </View>

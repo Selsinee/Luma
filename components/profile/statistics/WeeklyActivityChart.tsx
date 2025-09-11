@@ -1,19 +1,18 @@
 import Colors from '@/constants/Colors';
-import React from 'react';
+import { useUserStats } from '@/hooks/useUserStats';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+import { BarChart, barDataItem } from 'react-native-gifted-charts';
 
 const WeeklyActivityChart: React.FC = () => {
-  // Data for the bar chart, matching the UI
-  const barData = [
-    { value: 12, label: 'Mon' },
-    { value: 20, label: 'Tue' },
-    { value: 8, label: 'Wed' },
-    { value: 27, label: 'Thu' },
-    { value: 15, label: 'Fri' },
-    { value: 32, label: 'Sat' },
-    { value: 18, label: 'Sun' },
-  ];
+  const { data } = useUserStats();
+  const { weekly_activity = [] } = data ?? {};
+  const barData: barDataItem[] = useMemo(() => {
+    return weekly_activity.map(w => ({
+      label: w.day,
+      value: w.words_studied,
+    }));
+  }, [weekly_activity]);
 
   return (
     <View style={styles.card}>

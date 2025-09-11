@@ -1,16 +1,23 @@
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ChangeGoalBottomSheet, {
+  ChangeGoalSheetHandle,
+} from './ChangeGoalBottomSheet';
 
 const StudySettings: React.FC = () => {
   const { user } = useAuth();
-
-  const onChangeGoalPress = () => {};
+  const changeGoalSheetRef = useRef<ChangeGoalSheetHandle>(null);
+  console.log(user);
 
   return (
     <View style={styles.card}>
+      <ChangeGoalBottomSheet
+        ref={changeGoalSheetRef}
+        initialGoal={user?.daily_goal ?? 0}
+      />
       {/* Header */}
       <View style={styles.header}>
         <Feather name="book-open" size={18} color="#555" />
@@ -29,7 +36,9 @@ const StudySettings: React.FC = () => {
       {/* Change Goal Button */}
       <TouchableOpacity
         style={styles.changeGoalButton}
-        onPress={onChangeGoalPress}
+        onPress={() => {
+          changeGoalSheetRef.current?.present();
+        }}
       >
         <Text style={styles.changeGoalButtonText}>Change Goal</Text>
       </TouchableOpacity>

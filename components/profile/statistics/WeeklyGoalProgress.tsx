@@ -1,23 +1,18 @@
 import Colors from '@/constants/Colors';
+import { useUserStats } from '@/hooks/useUserStats';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-// Props for the Weekly Goal Progress component
-interface WeeklyGoalProgressProps {
-  currentWords: number;
-  weeklyGoal: number;
-}
-
-const WeeklyGoalProgress: React.FC<WeeklyGoalProgressProps> = ({
-  currentWords,
-  weeklyGoal,
-}) => {
-  // Calculate percentage, capping it at 100% for the visual fill
+const WeeklyGoalProgress: React.FC = () => {
+  const { data } = useUserStats();
+  const { weekly_words_goal = 0, weekly_words_progress = 0 } = data ?? {};
   const percentage =
-    weeklyGoal > 0 ? Math.round((currentWords / weeklyGoal) * 100) : 0;
+    weekly_words_progress > 0
+      ? Math.round((weekly_words_progress / weekly_words_goal) * 100)
+      : 0;
   const progressBarFillWidth = Math.min(percentage, 100);
-  const goalAchieved = currentWords >= weeklyGoal;
+  const goalAchieved = weekly_words_progress >= weekly_words_goal;
 
   return (
     <View style={styles.card}>
@@ -31,7 +26,7 @@ const WeeklyGoalProgress: React.FC<WeeklyGoalProgressProps> = ({
       <View style={styles.progressInfoRow}>
         <Text style={styles.progressLabel}>This Week</Text>
         <Text style={styles.progressText}>
-          {currentWords}/{weeklyGoal} words
+          {weekly_words_progress}/{weekly_words_goal} words
         </Text>
       </View>
 

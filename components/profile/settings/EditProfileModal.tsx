@@ -1,6 +1,7 @@
 import Avatar from '@/components/Avatar';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
+import { useUpdateUser } from '@/hooks/useUpdateUser';
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import {
@@ -26,25 +27,35 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   onClose,
 }) => {
   const { user } = useAuth();
-  const [name, setName] = useState(user?.full_name);
-  const [email, setEmail] = useState(user?.email);
+  const { updateUserProfile, isLoading } = useUpdateUser();
 
-  // Reset internal state if the user prop changes from the outside
+  const [fullName, setFullName] = useState(user?.full_name || '');
+  const [bio, setBio] = useState(user?.bio || '');
+
   useEffect(() => {
     if (user) {
-      setName(user.full_name);
-      setEmail(user.email);
+      setFullName(user.full_name);
+      setBio(user.bio || '');
     }
-  }, [user]);
+  }, [user, isVisible]);
 
-  const handleSaveChanges = () => {
-    // Add validation if needed
-    // onSave({ name, email });
-    onClose();
+  const handleSaveChanges = async () => {
+    if (!fullName) {
+      Alert.alert('Error', 'Name cannot be empty.');
+      return;
+    }
+
+    const success = await updateUserProfile({
+      full_name: fullName,
+      bio: bio,
+    });
+
+    if (success) {
+      onClose();
+    }
   };
 
   const handlePickImage = () => {
-    // This would open the image picker in a real app
     Alert.alert('Upload Picture', 'Image picker would open here.');
   };
 
@@ -58,7 +69,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       <Pressable style={styles.modalBackdrop} onPress={onClose}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          // keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
         >
           <Pressable
             style={styles.modalContent}
@@ -91,7 +101,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </View>
               </TouchableOpacity>
               <Text style={styles.avatarHelpText}>
-                Click the camera icon to upload a new profile picture
+                Tap the avatar to upload a new profile picture
               </Text>
             </View>
 
@@ -102,20 +112,26 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Feather name="user" size={18} color="#9E9E9E" />
                 <TextInput
                   style={styles.textInput}
-                  value={name}
-                  onChangeText={setName}
+                  value={fullName}
+                  onChangeText={setFullName}
                 />
               </View>
 
-              <Text style={styles.inputLabel}>Email Address</Text>
-              <View style={styles.inputContainer}>
-                <Feather name="mail" size={18} color="#9E9E9E" />
+              <Text style={styles.inputLabel}>Bio</Text>
+              <View style={[styles.inputContainer, styles.bioInputContainer]}>
+                <Feather
+                  name="edit-3"
+                  size={18}
+                  color="#9E9E9E"
+                  style={{ paddingTop: 14 }}
+                />
                 <TextInput
-                  style={styles.textInput}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
+                  style={[styles.textInput, styles.bioTextInput]}
+                  placeholder="Tell us a little about yourself..."
+                  value={bio}
+                  onChangeText={setBio}
+                  multiline={true}
+                  maxLength={150}
                 />
               </View>
             </View>
@@ -125,14 +141,18 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
                 onPress={onClose}
+                disabled={isLoading}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.saveButton]}
                 onPress={handleSaveChanges}
+                disabled={isLoading}
               >
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+                <Text style={styles.saveButtonText}>
+                  {isLoading ? 'Saving...' : 'Save Changes'}
+                </Text>
               </TouchableOpacity>
             </View>
           </Pressable>
@@ -185,11 +205,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'relative',
   },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 50,
-  },
   avatarPlaceholder: {
     width: '100%',
     height: '100%',
@@ -214,9 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: 'center',
   },
-  formSection: {
-    // marginBottom: 16,
-  },
+  formSection: {},
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
@@ -233,6 +246,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#E8E8F0',
+  },
+  bioInputContainer: {
+    height: 100,
+    alignItems: 'flex-start',
+  },
+  bioTextInput: {
+    height: '100%',
+    textAlignVertical: 'top',
+    paddingTop: 14,
   },
   textInput: {
     flex: 1,

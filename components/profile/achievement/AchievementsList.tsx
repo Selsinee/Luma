@@ -1,54 +1,13 @@
+import { useAchievements } from '@/hooks/useAchivements';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import AchievementCard, { AchievementCardProps } from './AchievementCard';
-
-// Mock data for demonstration
-const MOCK_ACHIEVEMENTS: AchievementCardProps[] = [
-  {
-    id: '1',
-    title: 'First Steps',
-    description: 'Learn your first 10 words',
-    iconName: 'star',
-    isUnlocked: true,
-    earnedDate: '1/15/2024',
-  },
-  {
-    id: '2',
-    title: 'Word Master',
-    description: 'Learn 100 words',
-    iconName: 'award',
-    isUnlocked: true,
-    earnedDate: '2/20/2024',
-  },
-  {
-    id: '3',
-    title: 'Streak Warrior',
-    description: 'Maintain a 7-day streak',
-    iconName: 'zap',
-    isUnlocked: true,
-    earnedDate: '3/1/2024',
-  },
-  {
-    id: '4',
-    title: 'Polyglot',
-    description: 'Study 3 different languages',
-    iconName: 'globe',
-    isUnlocked: false,
-  },
-  {
-    id: '5',
-    title: 'Dedicated Learner',
-    description: 'Study for 30 consecutive days',
-    iconName: 'calendar',
-    isUnlocked: false,
-  },
-];
+import AchievementCard from './AchievementCard';
 
 const AchievementsList: React.FC = () => {
   // In a real app, this data would come from props or an API
-  const achievements = MOCK_ACHIEVEMENTS;
-  const unlockedCount = achievements.filter(a => a.isUnlocked).length;
-  const totalCount = achievements.length;
+  const { data } = useAchievements();
+  const unlockedCount = data?.filter(a => a.is_unlocked).length ?? 0;
+  const totalCount = data?.length ?? 0;
   const progress = totalCount > 0 ? (unlockedCount / totalCount) * 100 : 0;
 
   return (
@@ -62,7 +21,7 @@ const AchievementsList: React.FC = () => {
           <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
         </View>
       </View>
-      {achievements.map(a => (
+      {data?.map(a => (
         <AchievementCard {...a} key={a.id} />
       ))}
     </View>

@@ -4,9 +4,9 @@
 /* eslint-disable */
 import type { AchievementDetail } from '../models/AchievementDetail';
 import type { User } from '../models/User';
+import type { UserDashboardStats } from '../models/UserDashboardStats';
 import type { UserProfileUpdate } from '../models/UserProfileUpdate';
 import type { UserSettingsUpdate } from '../models/UserSettingsUpdate';
-import type { UserStats } from '../models/UserStats';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -77,11 +77,11 @@ export class UsersService {
     }
     /**
      * Read User Me Stats
-     * Fetches aggregated statistics for the user's profile dashboards.
-     * @returns UserStats Successful Response
+     * Fetches a comprehensive set of statistics for the user's profile dashboards.
+     * @returns UserDashboardStats Successful Response
      * @throws ApiError
      */
-    public static getStats(): CancelablePromise<UserStats> {
+    public static getStats(): CancelablePromise<UserDashboardStats> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/stats',
