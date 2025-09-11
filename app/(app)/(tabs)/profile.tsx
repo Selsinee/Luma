@@ -11,8 +11,11 @@ import SummaryCards from '@/components/profile/statistics/SummaryCards';
 import WeeklyActivityChart from '@/components/profile/statistics/WeeklyActivityChart';
 import WeeklyGoalProgress from '@/components/profile/statistics/WeeklyGoalProgress';
 import UserProfileHeader from '@/components/profile/UserProfileHeader';
-import { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // --- Content for the 'Stats' tab ---
@@ -43,11 +46,32 @@ const SettingsContent = () => (
 export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('stats');
   const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const { refetchUser } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['userStats'] }),
+      queryClient.invalidateQueries({ queryKey: ['achievements'] }),
+      refetchUser,
+    ]);
+    setIsRefreshing(false);
+  }, []);
 
   return (
     <ScrollView
-      style={[styles.container, { paddingTop: insets.top }]}
+      style={[styles.container, { marginTop: insets.top }]}
       contentContainerStyle={styles.scrollContent}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          tintColor={Colors.primary}
+          colors={[Colors.primary]}
+        />
+      }
     >
       <UserProfileHeader />
       <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
