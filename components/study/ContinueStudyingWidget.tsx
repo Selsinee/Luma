@@ -1,34 +1,15 @@
 import Colors from '@/constants/Colors';
+import { useRecentDecks } from '@/hooks/useRecentDecks';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import StudyItem, { StudyItemProps } from './StudyItem';
-
-// Mock data for demonstration purposes
-const MOCK_STUDY_ITEMS: StudyItemProps[] = [
-  {
-    id: '1',
-    title: 'Advanced Vocabulary',
-    studiedToday: 25,
-    progress: 67,
-  },
-  {
-    id: '2',
-    title: 'Spanish Basics',
-    studiedToday: 15,
-    progress: 34,
-  },
-  {
-    id: '3',
-    title: 'TOEFL Preparation',
-    studiedToday: 30,
-    progress: 45,
-  },
-];
+import StudyItem from './StudyItem';
 
 const ContinueStudyingWidget: React.FC = () => {
-  // In a real app, this data would come from props or a state management store
-  const items = MOCK_STUDY_ITEMS;
+  const { data } = useRecentDecks();
+  if (!data || data.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.widgetContainer}>
@@ -38,8 +19,8 @@ const ContinueStudyingWidget: React.FC = () => {
       </View>
 
       <View style={styles.listContainer}>
-        {items.map(item => (
-          <StudyItem key={item.id} {...item} />
+        {data.map(item => (
+          <StudyItem key={item.id} item={item} />
         ))}
       </View>
     </View>

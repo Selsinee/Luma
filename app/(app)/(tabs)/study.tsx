@@ -13,7 +13,7 @@ export default function StudyScreen() {
       contentContainerStyle={{ padding: 16 }}
       showsVerticalScrollIndicator={false}
     >
-      <DailyProgress wordsStudied={15} dailyGoal={30} streak={5} />
+      <DailyProgress />
       <StudyModeSelector />
       <NeedsReviewWidget />
       <ContinueStudyingWidget />

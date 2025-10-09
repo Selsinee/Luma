@@ -1,3 +1,4 @@
+import { DeckWithProgress } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -6,16 +7,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Props for a single study item
 export interface StudyItemProps {
-  id: string;
-  title: string;
-  studiedToday: number;
-  progress: number; // Percentage from 0 to 100
+  item: DeckWithProgress;
 }
 
 const StudyItem: React.FC<StudyItemProps> = ({
-  title,
-  studiedToday,
-  progress,
+  item: { title, studied_today, progress },
 }) => {
   const router = useRouter();
   return (
@@ -26,7 +22,7 @@ const StudyItem: React.FC<StudyItemProps> = ({
           <Text style={styles.title}>{title}</Text>
           <View style={styles.statsBadge}>
             <Feather name="trending-up" size={14} color="#2E7D32" />
-            <Text style={styles.statsText}>{studiedToday} today</Text>
+            <Text style={styles.statsText}>{studied_today} today</Text>
           </View>
         </View>
 

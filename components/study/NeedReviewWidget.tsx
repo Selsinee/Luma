@@ -1,30 +1,15 @@
 import Colors from '@/constants/Colors';
+import { useNeedsReviewDecks } from '@/hooks/useNeedsReviewDecks';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ReviewItem, { ReviewItemProps } from './ReviewItem';
-
-// Mock data for demonstration purposes
-const MOCK_REVIEW_ITEMS: ReviewItemProps[] = [
-  {
-    id: '1',
-    title: 'Medical Terminology',
-    category: 'Medical',
-    wordCount: 300,
-    lastStudied: '3 days ago',
-  },
-  {
-    id: '2',
-    title: 'French Essentials',
-    category: 'Language',
-    wordCount: 250,
-    lastStudied: '1 week ago',
-  },
-];
+import ReviewItem from './ReviewItem';
 
 const NeedsReviewWidget: React.FC = () => {
-  // In a real app, you would pass this data in as a prop
-  const items = MOCK_REVIEW_ITEMS;
+  const { data } = useNeedsReviewDecks();
+  if (!data || data?.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.widgetContainer}>
@@ -34,13 +19,13 @@ const NeedsReviewWidget: React.FC = () => {
           <Text style={styles.headerTitle}>Needs Review</Text>
         </View>
         <View style={styles.countBadge}>
-          <Text style={styles.countText}>{items.length}</Text>
+          <Text style={styles.countText}>{data.length}</Text>
         </View>
       </View>
 
       <View style={styles.listContainer}>
-        {items.map(item => (
-          <ReviewItem key={item.id} {...item} />
+        {data.map(item => (
+          <ReviewItem key={item.id} item={item} />
         ))}
       </View>
     </View>

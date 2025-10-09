@@ -1,3 +1,4 @@
+import { DeckNeedsReview } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -6,18 +7,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Props for a single review item
 export interface ReviewItemProps {
-  id: string;
-  title: string;
-  category: string;
-  wordCount: number;
-  lastStudied: string;
+  item: DeckNeedsReview;
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({
-  title,
-  category,
-  wordCount,
-  lastStudied,
+  item: { id, title, category, word_count, last_studied },
 }) => {
   const router = useRouter();
   return (
@@ -30,7 +24,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
           </View>
         </View>
         <Text style={styles.detailsText}>
-          {wordCount} words · Last: {lastStudied}
+          {word_count} words · Last: {last_studied}
         </Text>
       </View>
       <TouchableOpacity

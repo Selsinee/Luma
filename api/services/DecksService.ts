@@ -5,7 +5,9 @@
 import type { Deck } from '../models/Deck';
 import type { DeckCreate } from '../models/DeckCreate';
 import type { DeckDetail } from '../models/DeckDetail';
+import type { DeckNeedsReview } from '../models/DeckNeedsReview';
 import type { DeckUpdate } from '../models/DeckUpdate';
+import type { DeckWithProgress } from '../models/DeckWithProgress';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -50,6 +52,30 @@ export class DecksService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * Read Decks Needing Review
+     * Gets a list of decks that the user has not studied recently.
+     * @returns DeckNeedsReview Successful Response
+     * @throws ApiError
+     */
+    public static getDecksNeedingReview(): CancelablePromise<Array<DeckNeedsReview>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/decks/needs-review',
+        });
+    }
+    /**
+     * Read Recently Studied Decks
+     * Gets a list of the most recently studied decks for the authenticated user.
+     * @returns DeckWithProgress Successful Response
+     * @throws ApiError
+     */
+    public static getRecentlyStudiedDecks(): CancelablePromise<Array<DeckWithProgress>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/decks/recent',
         });
     }
     /**

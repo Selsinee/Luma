@@ -12,6 +12,7 @@ export type UserDashboardStats = {
     days_active: number;
     weekly_words_goal: number;
     weekly_words_progress: number;
+    words_studied_today: number;
     monthly_progress: Array<MonthlyProgress>;
     difficulty_breakdown: DifficultyBreakdown;
     weekly_activity: Array<WeeklyActivity>;

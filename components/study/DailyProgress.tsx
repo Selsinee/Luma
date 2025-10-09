@@ -1,24 +1,19 @@
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
+import { useUserStats } from '@/hooks/useUserStats';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-interface DailyProgressProps {
-  wordsStudied: number;
-  dailyGoal: number;
-  streak: number;
-}
+const DailyProgress: React.FC = () => {
+  const { data } = useUserStats();
+  const { user } = useAuth();
+  const { words_studied_today = 0 } = data || {};
+  const { daily_goal = 0, streak } = user || {};
 
-const DailyProgress: React.FC<DailyProgressProps> = ({
-  wordsStudied,
-  dailyGoal,
-  streak,
-}) => {
-  // Calculate progress and remaining words
   const percentage =
-    dailyGoal > 0 ? Math.round((wordsStudied / dailyGoal) * 100) : 0;
-  const remaining = dailyGoal - wordsStudied;
-  // Cap the visual width of the progress bar at 100%
+    daily_goal > 0 ? Math.round((words_studied_today / daily_goal) * 100) : 0;
+  const remaining = daily_goal - words_studied_today;
   const fillWidthPercentage = Math.min(percentage, 100);
 
   return (
@@ -32,7 +27,7 @@ const DailyProgress: React.FC<DailyProgressProps> = ({
           <View>
             <Text style={styles.title}>Today&#39;s Progress</Text>
             <Text style={styles.subtitle}>
-              {wordsStudied} of {dailyGoal} words
+              {words_studied_today} of {daily_goal} words
             </Text>
           </View>
         </View>

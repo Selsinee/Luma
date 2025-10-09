@@ -8,6 +8,7 @@ import { Feather } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -50,6 +51,7 @@ export default function Index() {
           padding: 16,
         }}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={false} />}
       >
         <StatsWidget
           wordsStudied={40}
