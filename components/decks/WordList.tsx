@@ -20,7 +20,6 @@ const WordList: React.FC<WordListProps> = ({ words }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: 16,
   },
 });
 

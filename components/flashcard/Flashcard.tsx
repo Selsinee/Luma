@@ -1,18 +1,17 @@
-import Colors from '@/constants/Colors'; // Assuming Colors.borderColor exists and is a suitable default
+import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// MODIFIED: Import Gesture from the root of the library
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 // Define the types for the card's props
 type Difficulty = 'easy' | 'medium' | 'hard';
@@ -156,9 +155,9 @@ const Flashcard: React.FC<FlashcardProps> = ({
     opacity.value = withTiming(0, { duration: 150 });
     setTimeout(() => {
       if (direction === 'right') {
-        runOnJS(handleGotIt)();
+        scheduleOnRN(handleGotIt);
       } else {
-        runOnJS(handleNeedPractice)();
+        scheduleOnRN(handleNeedPractice);
       }
     }, 150);
   };
@@ -182,7 +181,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
         const direction = event.translationX > 0 ? 'right' : 'left';
         const targetX = direction === 'right' ? 500 : -500;
 
-        runOnJS(onSwipeComplete)(direction);
+        scheduleOnRN(onSwipeComplete, direction);
         translateX.value = withSpring(targetX, {});
       } else {
         translateX.value = withSpring(0);
@@ -195,10 +194,9 @@ const Flashcard: React.FC<FlashcardProps> = ({
     .maxDeltaX(10)
     .maxDeltaY(10)
     .onEnd(() => {
-      runOnJS(handleRevealToggle)();
+      scheduleOnRN(handleRevealToggle);
     });
 
-  // ✨ THE FIX IS HERE ✨
   // We use Gesture.Race to ensure that native touchables (like the volume button)
   // get priority over our custom pan/tap gestures.
   const composedGesture = Gesture.Race(

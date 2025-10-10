@@ -38,6 +38,7 @@ export type { ValidationError } from './models/ValidationError';
 export type { WeeklyActivity } from './models/WeeklyActivity';
 export type { Word } from './models/Word';
 export type { WordCreate } from './models/WordCreate';
+export type { WordProgressUpdate } from './models/WordProgressUpdate';
 export type { WordUpdate } from './models/WordUpdate';
 export type { WordWithProgress } from './models/WordWithProgress';
 

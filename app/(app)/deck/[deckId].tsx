@@ -4,13 +4,11 @@ import DeckSummaryStats from '@/components/decks/DeckSummaryStats';
 import DeckTabs, { DeckTab } from '@/components/decks/DeckTabs';
 import StudyActions from '@/components/decks/StudyActions';
 import StudyStatistics from '@/components/decks/StudyStatistics';
-import WordList from '@/components/decks/WordList';
 import { QuizOptionsModal } from '@/components/quiz/QuizOptionsModal';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Alert,
-  LayoutChangeEvent,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,7 +22,7 @@ import {
   FilterOptionsMenu,
   FilterState,
 } from '@/components/decks/FilterOptionsMenu';
-import WordActions from '@/components/decks/WordActions';
+import WordsTabContent from '@/components/decks/WordsTabContent';
 import { useDeckDetail } from '@/hooks/useDeckDetail';
 import errorGenerator from '@/utils/errorGenerator';
 import { Feather } from '@expo/vector-icons';
@@ -37,7 +35,6 @@ const DeckDetails = () => {
   const [activeTab, setActiveTab] = useState<DeckTab>('words');
   const [isQuizModalVisible, setQuizModalVisible] = useState(false);
   const [isAddWordModalVisible, setAddWordModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data, isFetching, error } = useDeckDetail(deckId);
@@ -50,33 +47,13 @@ const DeckDetails = () => {
   const [filters, setFilters] = useState<FilterState>({
     difficulties: new Set(Object.values(DifficultyEnum)),
     progress: 'all',
-    sortBy: 'alphabetical',
+    sortBy: 'recent',
   });
-  const [activeFilterCount, setActiveFilterCount] = useState(0);
   const [wordActionsY, setWordActionsY] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const filterTriggerRef = useRef<View>(null);
   const scrollPositionRef = useRef(0);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    let count = 0;
-    if (filters.difficulties.size < 3) count++; // If not all difficulties are selected
-    if (filters.progress !== 'all') count++;
-    // Add logic for sortBy if changing it from default also counts as a filter
-    if (filters.sortBy !== 'alphabetical') count++; // Assuming alphabetical is default/no filter
-
-    setActiveFilterCount(count);
-  }, [filters]);
-
-  const handleClearFilters = () => {
-    setFilters({
-      difficulties: new Set(Object.values(DifficultyEnum)),
-      progress: 'all',
-      sortBy: 'alphabetical',
-    });
-    setSearchQuery(''); // Also clear search if desired
-  };
 
   const onFilterPress = () => {
     const openMenu = () => {
@@ -153,22 +130,14 @@ const DeckDetails = () => {
                 wordCount={6}
               />
               {activeTab === 'words' && (
-                <View
-                  onLayout={(event: LayoutChangeEvent) => {
-                    setWordActionsY(event.nativeEvent.layout.y);
-                  }}
-                >
-                  <WordActions
-                    ref={filterTriggerRef}
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    onFilterPress={onFilterPress}
-                    activeFilterCount={activeFilterCount}
-                    totalWords={data?.words?.length || 0}
-                    onClearFilters={handleClearFilters}
-                  />
-                  <WordList words={data.words ?? []} />
-                </View>
+                <WordsTabContent
+                  ref={filterTriggerRef}
+                  words={data.words ?? []}
+                  onFilterPress={onFilterPress}
+                  filters={filters}
+                  setFilters={setFilters}
+                  onLayout={e => setWordActionsY(e.nativeEvent.layout.y)}
+                />
               )}
               {activeTab === 'statistics' && (
                 <>

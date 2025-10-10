@@ -14,6 +14,7 @@ interface WordActionsProps {
   onSearchChange: (query: string) => void;
   onFilterPress: () => void;
   activeFilterCount: number;
+  shownWordCount: number;
   totalWords: number;
   onClearFilters: () => void;
 }
@@ -27,11 +28,11 @@ const WordActions = React.forwardRef<View, WordActionsProps>(
       activeFilterCount,
       totalWords,
       onClearFilters,
+      shownWordCount,
     },
     ref,
   ) => {
     const isFilterActive = activeFilterCount > 0;
-    const filteredWordCount = totalWords - activeFilterCount; // This is a placeholder logic
 
     return (
       <View style={styles.container}>
@@ -62,7 +63,7 @@ const WordActions = React.forwardRef<View, WordActionsProps>(
         {isFilterActive && (
           <View style={styles.filterSummaryContainer}>
             <Text style={styles.filterSummaryText}>
-              Showing {filteredWordCount} of {totalWords} words
+              Showing {shownWordCount} of {totalWords} words
             </Text>
             <TouchableOpacity onPress={onClearFilters}>
               <Text style={styles.clearAllText}>Clear all</Text>

@@ -12,7 +12,7 @@ import { request as __request } from '../core/request';
 export class StudyService {
     /**
      * Create Study Session
-     * Records the completion of a study session (flashcard or quiz).
+     * Records the completion of a study session and updates all related progress.
      * @param requestBody
      * @returns StudySession Successful Response
      * @throws ApiError

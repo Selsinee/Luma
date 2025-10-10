@@ -1,6 +1,7 @@
 import { DeckNeedsReview } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -14,23 +15,28 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
   item: { id, title, category, word_count, last_studied },
 }) => {
   const router = useRouter();
+
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemInfo}>
         <View style={styles.itemHeader}>
-          <Text style={styles.itemTitle}>{title}</Text>
+          <Text style={styles.itemTitle} numberOfLines={1}>
+            {title}
+          </Text>
           <View style={styles.tagContainer}>
             <Text style={styles.tagText}>{category}</Text>
           </View>
         </View>
         <Text style={styles.detailsText}>
-          {word_count} words · Last: {last_studied}
+          {word_count} words{' '}
+          {last_studied &&
+            `· Last: ${format(new Date(last_studied), 'MMM d, yyyy')}`}
         </Text>
       </View>
       <TouchableOpacity
         style={styles.studyButton}
         onPress={() => {
-          router.navigate(`/deck-details`);
+          router.navigate(`/deck/${id}`);
         }}
       >
         <Feather name="book-open" size={16} color="#FFFFFF" />
@@ -64,6 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
+    maxWidth: '70%',
   },
   tagContainer: {
     backgroundColor: '#F5F5F5',

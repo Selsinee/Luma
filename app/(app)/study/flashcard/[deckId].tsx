@@ -1,10 +1,13 @@
+import { SessionTypeEnum, StatusEnum, WordProgressUpdate } from '@/api';
 import Flashcard from '@/components/flashcard/Flashcard';
 import StudyFeedback from '@/components/flashcard/StudyFeedback';
 import StudyHeader from '@/components/flashcard/StudyHeader';
 import Colors from '@/constants/Colors';
+import { useCreateStudySession } from '@/hooks/useCreateStudySession';
+import { useDeckDetail } from '@/hooks/useDeckDetail';
 import { Feather } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -44,67 +47,27 @@ const CongratulationsCard: React.FC<{
   );
 };
 
-// Mock data for a deck of words
-const MOCK_DECK_WORDS = [
-  {
-    id: 'w1',
-    word: 'Ubiquitous',
-    difficulty: 'medium' as 'medium',
-    definition: 'Present, appearing, or found everywhere',
-    example: 'Smartphones have become ubiquitous in modern society.',
-  },
-  {
-    id: 'w2',
-    word: 'Perspicacious',
-    difficulty: 'hard' as 'hard',
-    definition: 'Having a ready insight into and understanding of things',
-    example: 'She was perspicacious enough to see through his false promises.',
-  },
-  {
-    id: 'w3',
-    word: 'Ephemeral',
-    difficulty: 'hard' as 'hard',
-    definition: 'Lasting for a very short time',
-    example:
-      'The beauty of cherry blossoms is ephemeral, lasting only a few weeks.',
-  },
-  {
-    id: 'w4',
-    word: 'Benevolent',
-    difficulty: 'easy' as 'easy',
-    definition: 'Well meaning and kindly',
-    example: 'The benevolent king was loved by all his subjects.',
-  },
-  {
-    id: 'w5',
-    word: 'Meticulous',
-    difficulty: 'medium' as 'medium',
-    definition: 'Showing great attention to detail; very careful and precise',
-    example: 'He was meticulous in his preparation for the exam.',
-  },
-  {
-    id: 'w6',
-    word: 'Procrastinate',
-    difficulty: 'easy' as 'easy',
-    definition: 'Delay or postpone action; put off doing something',
-    example: 'Many students procrastinate when it comes to writing essays.',
-  },
-];
-
 export default function StudyScreen() {
   const router = useRouter();
-  const { deckId } = useLocalSearchParams();
+  const { deckId } = useLocalSearchParams<{ deckId: string }>();
   const insets = useSafeAreaInsets();
+  const { data } = useDeckDetail(deckId);
+  const { words = [] } = data || {};
+  const sessionStartTime = useRef(Date.now());
+  const { createStudySession } = useCreateStudySession();
 
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [reviewedCount, setReviewedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [practiceCount, setPracticeCount] = useState(0);
   const [showQuickTip, setShowQuickTip] = useState(true);
-  const [isSessionComplete, setIsSessionComplete] = useState(false); // NEW state
+  const [isSessionComplete, setIsSessionComplete] = useState(false);
+  const [progressUpdates, setProgressUpdates] = useState<WordProgressUpdate[]>(
+    [],
+  );
 
-  const totalCards = MOCK_DECK_WORDS.length;
-  const currentWord = MOCK_DECK_WORDS[currentWordIndex];
+  const totalCards = words.length;
+  const currentWord = words[currentWordIndex];
   const masteryPercentage =
     totalCards > 0 ? Math.round((correctCount / totalCards) * 100) : 0;
 
@@ -126,18 +89,45 @@ export default function StudyScreen() {
   }, [currentWordIndex, totalCards]);
 
   const handleGotIt = useCallback(() => {
+    setProgressUpdates(prev => [
+      ...prev,
+      { word_id: currentWord.id, status: StatusEnum.MASTERED },
+    ]);
     setCorrectCount(prev => prev + 1);
     goToNextWord();
-  }, [goToNextWord]);
+  }, [goToNextWord, currentWord]);
 
   const handleNeedPractice = useCallback(() => {
+    setProgressUpdates(prev => [
+      ...prev,
+      { word_id: currentWord.id, status: StatusEnum.LEARNING },
+    ]);
     setPracticeCount(prev => prev + 1);
     goToNextWord();
-  }, [goToNextWord]);
+  }, [goToNextWord, currentWord]);
 
   const handleSkipWord = useCallback(() => {
     goToNextWord();
   }, [goToNextWord]);
+
+  const handleFinishSession = () => {
+    // Calculate session duration in seconds
+    const durationSeconds = Math.floor(
+      (Date.now() - sessionStartTime.current) / 1000,
+    );
+
+    // Call the API to create the study session
+    createStudySession({
+      deck_id: deckId,
+      session_type: SessionTypeEnum.FLASHCARD,
+      words_reviewed: reviewedCount,
+      duration_seconds: durationSeconds,
+      progress_updates: progressUpdates,
+      // score_percentage is null for flashcards
+    });
+
+    router.back();
+  };
 
   const handleBack = () => {
     router.back();
@@ -165,7 +155,7 @@ export default function StudyScreen() {
         options={{
           header: () => (
             <StudyHeader
-              deckTitle={`Advanced Vocabulary (Deck ${deckId})`}
+              deckTitle={data?.title || 'Study'}
               currentCardIndex={currentWordIndex + 1}
               totalCards={totalCards}
               masteryPercentage={masteryPercentage}
@@ -181,7 +171,7 @@ export default function StudyScreen() {
           word={currentWord.word}
           difficulty={currentWord.difficulty}
           definition={currentWord.definition}
-          example={currentWord.example}
+          example={currentWord.example ?? ''}
           onSwipeRight={handleGotIt}
           onSwipeLeft={handleNeedPractice}
           onSkip={handleSkipWord}
@@ -202,9 +192,11 @@ export default function StudyScreen() {
         practiceCount={practiceCount}
       />
 
-      {/* NEW: Render the congratulations card as an overlay when the session is complete */}
       {isSessionComplete && (
-        <CongratulationsCard onFinish={handleBack} reviewedCount={totalCards} />
+        <CongratulationsCard
+          onFinish={handleFinishSession}
+          reviewedCount={totalCards}
+        />
       )}
     </View>
   );

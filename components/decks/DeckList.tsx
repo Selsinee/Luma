@@ -26,8 +26,6 @@ const DeckList: React.FC = () => {
   });
   const { total_decks, decks } = data || { total_decks: 0, decks: [] };
 
-  console.log(isLoading);
-
   return (
     <View style={styles.container}>
       <Stack.Screen
