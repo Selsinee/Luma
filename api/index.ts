@@ -12,6 +12,8 @@ export type { Body_login } from './models/Body_login';
 export type { Deck } from './models/Deck';
 export type { DeckCreate } from './models/DeckCreate';
 export type { DeckDetail } from './models/DeckDetail';
+export type { DeckListItem } from './models/DeckListItem';
+export type { DeckListResponse } from './models/DeckListResponse';
 export type { DeckNeedsReview } from './models/DeckNeedsReview';
 export type { DeckUpdate } from './models/DeckUpdate';
 export type { DeckWithProgress } from './models/DeckWithProgress';
@@ -37,6 +39,7 @@ export type { WeeklyActivity } from './models/WeeklyActivity';
 export type { Word } from './models/Word';
 export type { WordCreate } from './models/WordCreate';
 export type { WordUpdate } from './models/WordUpdate';
+export type { WordWithProgress } from './models/WordWithProgress';
 
 export { AuthenticationService } from './services/AuthenticationService';
 export { DecksService } from './services/DecksService';

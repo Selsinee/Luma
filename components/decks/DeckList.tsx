@@ -1,73 +1,70 @@
-import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import Colors from '@/constants/Colors';
+import { useDecks } from '@/hooks/useDecks';
+import errorGenerator from '@/utils/errorGenerator';
+import { useQueryClient } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { RefreshControl } from 'react-native-gesture-handler';
+import BaseHeader from '../BaseHeader';
 import DeckCardDetailed from './DeckCardDetailed'; // Import the card component
+import DeckFilters from './DeckFilters';
 
-// We'll need to import or redeclare the props interface
-interface DeckCardDetailedProps {
-  id: string; // Add a unique ID for the keyExtractor
-  title: string;
-  description: string;
-  category: string;
-  lastStudied: string;
-  studiedToday: number;
-  currentProgress: number;
-  totalItems: number;
-}
+const DeckList: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('All');
+  const queryClient = useQueryClient();
+  const { data, isLoading, isFetching, error } = useDecks({
+    query: searchQuery,
+    category: activeFilter,
+  });
+  const { total_decks, decks } = data || { total_decks: 0, decks: [] };
 
-export const MOCK_DECKS: DeckCardDetailedProps[] = [
-  {
-    id: '1',
-    title: 'Advanced Vocabulary',
-    description:
-      'Challenging words for academic writing and professional communication',
-    category: 'Academic',
-    lastStudied: '2 hours ago',
-    studiedToday: 25,
-    currentProgress: 101,
-    totalItems: 150,
-  },
-  {
-    id: '2',
-    title: 'Spanish Basics',
-    description: 'Essential Spanish vocabulary for beginners',
-    category: 'Language',
-    lastStudied: 'Yesterday',
-    studiedToday: 15,
-    currentProgress: 68,
-    totalItems: 200,
-  },
-  {
-    id: '3',
-    title: 'Medical Terminology',
-    description:
-      'Important medical terms and definitions for healthcare professionals',
-    category: 'Medical',
-    lastStudied: '3 days ago',
-    studiedToday: 0,
-    currentProgress: 267,
-    totalItems: 300,
-  },
-  {
-    id: '4',
-    title: 'TOEFL Preparation',
-    description: 'High-frequency words commonly found on the TOEFL exam',
-    category: 'Test Prep',
-    lastStudied: '1 hour ago',
-    studiedToday: 30,
-    currentProgress: 225,
-    totalItems: 500,
-  },
-];
+  console.log(isLoading);
 
-// Define the type for the props the list component will accept
-interface DeckListProps {
-  decks: typeof MOCK_DECKS;
-}
-
-const DeckList: React.FC<DeckListProps> = ({ decks }) => {
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          header: () => (
+            <BaseHeader
+              type="tab"
+              title="My decks"
+              subtitle={`${total_decks} active decks`}
+            />
+          ),
+        }}
+      />
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={() => {
+              queryClient.invalidateQueries({ queryKey: ['decks'] });
+            }}
+          />
+        }
+        ListHeaderComponent={
+          <>
+            <DeckFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              activeFilter={activeFilter}
+              setActiveFilter={setActiveFilter}
+            />
+            {isFetching && (
+              <View style={{ marginBottom: 16 }}>
+                <ActivityIndicator size="small" color={Colors.primary} />
+              </View>
+            )}
+          </>
+        }
         data={decks}
         // renderItem tells the list how to render each individual deck
         renderItem={({ item }) => <DeckCardDetailed {...item} />}
@@ -77,6 +74,17 @@ const DeckList: React.FC<DeckListProps> = ({ decks }) => {
         contentContainerStyle={styles.listContent}
         // Hides the vertical scroll bar for a cleaner look
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          !isLoading ? (
+            <View>
+              <Text style={{ textAlign: 'center' }}>
+                {error
+                  ? errorGenerator(error)
+                  : 'No decks found. Create your first deck!'}
+              </Text>
+            </View>
+          ) : null
+        }
       />
     </View>
   );
@@ -89,6 +97,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+    flex: 1,
   },
 });
 

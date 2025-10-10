@@ -21,9 +21,19 @@ const FILTERS = [
   'Business',
 ];
 
-const DeckFilters = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
+export interface DeckFiltersProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+}
+
+const DeckFilters: React.FC<DeckFiltersProps> = ({
+  searchQuery,
+  setSearchQuery,
+  activeFilter,
+  setActiveFilter,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -96,9 +106,8 @@ const DeckFilters = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
     backgroundColor: '#FFFFFF',
+    paddingBottom: 16,
   },
   searchRow: {
     flexDirection: 'row',

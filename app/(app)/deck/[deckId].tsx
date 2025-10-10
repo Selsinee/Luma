@@ -2,48 +2,45 @@ import DeckData from '@/components/decks/DeckData';
 import DeckHeader from '@/components/decks/DeckHeader';
 import DeckSummaryStats from '@/components/decks/DeckSummaryStats';
 import DeckTabs, { DeckTab } from '@/components/decks/DeckTabs';
-import DifficultyBreakdownList from '@/components/decks/DifficultyBreakdown';
 import StudyActions from '@/components/decks/StudyActions';
 import StudyStatistics from '@/components/decks/StudyStatistics';
 import WordList from '@/components/decks/WordList';
 import { QuizOptionsModal } from '@/components/quiz/QuizOptionsModal';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   LayoutChangeEvent,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 // ✨ 1. Import the new component
+import { DifficultyEnum } from '@/api';
 import { AddNewWordModal } from '@/components/decks/AddNewWordModal';
 import {
   FilterOptionsMenu,
   FilterState,
 } from '@/components/decks/FilterOptionsMenu';
 import WordActions from '@/components/decks/WordActions';
+import { useDeckDetail } from '@/hooks/useDeckDetail';
+import errorGenerator from '@/utils/errorGenerator';
 import { Feather } from '@expo/vector-icons';
+import { useQueryClient } from '@tanstack/react-query';
+import { RefreshControl } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DeckDetails = () => {
+  const { deckId } = useLocalSearchParams<{ deckId: string }>();
   const [activeTab, setActiveTab] = useState<DeckTab>('words');
   const [isQuizModalVisible, setQuizModalVisible] = useState(false);
   const [isAddWordModalVisible, setAddWordModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const sampleDeckData = {
-    description:
-      'Challenging words for academic writing and professional communication',
-    totalWords: 6,
-    masteryPercent: 50,
-    wordsMastered: 3,
-    easyCount: 1,
-    mediumCount: 3,
-    hardCount: 2,
-  };
+  const { data, isFetching, error } = useDeckDetail(deckId);
 
   const [isFilterMenuVisible, setFilterMenuVisible] = useState(false);
   const [filterMenuPosition, setFilterMenuPosition] = useState({
@@ -51,7 +48,7 @@ const DeckDetails = () => {
     right: 0,
   });
   const [filters, setFilters] = useState<FilterState>({
-    difficulties: new Set(['easy', 'medium', 'hard']),
+    difficulties: new Set(Object.values(DifficultyEnum)),
     progress: 'all',
     sortBy: 'alphabetical',
   });
@@ -60,6 +57,7 @@ const DeckDetails = () => {
   const scrollRef = useRef<ScrollView>(null);
   const filterTriggerRef = useRef<View>(null);
   const scrollPositionRef = useRef(0);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let count = 0;
@@ -73,7 +71,7 @@ const DeckDetails = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      difficulties: new Set(['easy', 'medium', 'hard']),
+      difficulties: new Set(Object.values(DifficultyEnum)),
       progress: 'all',
       sortBy: 'alphabetical',
     });
@@ -106,7 +104,7 @@ const DeckDetails = () => {
     word: string;
     definition: string;
     example: string;
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: DifficultyEnum;
   }) => {
     Alert.alert(
       'New Word Added!',
@@ -125,76 +123,108 @@ const DeckDetails = () => {
       <Stack.Screen
         options={{
           header: () => (
-            <DeckHeader title="Advanced Vocabulary" category="Academic" />
+            <DeckHeader
+              title={data?.title ?? ''}
+              category={data?.category ?? ''}
+            />
           ),
         }}
       />
-      {/* ✨ NEW: Main container for the new layout */}
       <View style={styles.container}>
         <ScrollView
           ref={scrollRef}
           style={styles.scrollContainer}
           contentContainerStyle={styles.scrollContentContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={isFetching}
+              onRefresh={() => {
+                queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
+              }}
+            />
+          }
         >
-          <DeckData {...sampleDeckData} />
-          {/* StudyActions is now moved to the footer */}
-          <DeckTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            wordCount={6}
-          />
-          {activeTab === 'words' && (
+          {data && (
+            <>
+              <DeckData {...data} />
+              <DeckTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                wordCount={6}
+              />
+              {activeTab === 'words' && (
+                <View
+                  onLayout={(event: LayoutChangeEvent) => {
+                    setWordActionsY(event.nativeEvent.layout.y);
+                  }}
+                >
+                  <WordActions
+                    ref={filterTriggerRef}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    onFilterPress={onFilterPress}
+                    activeFilterCount={activeFilterCount}
+                    totalWords={data?.words?.length || 0}
+                    onClearFilters={handleClearFilters}
+                  />
+                  <WordList words={data.words ?? []} />
+                </View>
+              )}
+              {activeTab === 'statistics' && (
+                <>
+                  <DeckSummaryStats
+                    wordsMastered={data.words_mastered}
+                    stillLearning={data.words_learning}
+                  />
+                  <StudyStatistics
+                    studiedToday={data.studied_today}
+                    lastStudied={data.last_studied}
+                    overallProgress={data.mastery_percentage}
+                  />
+                  {/* <DifficultyBreakdownList
+                    easyCount={data.easy_count}
+                    mediumCount={data.medium_count}
+                    hardCount={data.hard_count}
+                  /> */}
+                </>
+              )}
+            </>
+          )}
+          {error && (
             <View
-              onLayout={(event: LayoutChangeEvent) => {
-                setWordActionsY(event.nativeEvent.layout.y);
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              <WordActions
-                ref={filterTriggerRef}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                onFilterPress={onFilterPress}
-                activeFilterCount={activeFilterCount}
-                totalWords={sampleDeckData.totalWords}
-                onClearFilters={handleClearFilters}
-              />
-              <WordList />
+              <Text>{errorGenerator(error)}</Text>
             </View>
-          )}
-          {activeTab === 'statistics' && (
-            <>
-              <DeckSummaryStats wordsMastered={3} stillLearning={3} />
-              <StudyStatistics
-                studiedToday={15}
-                lastStudied="Today"
-                overallProgress={50}
-                completionRate={75}
-              />
-              <DifficultyBreakdownList
-                easyCount={1}
-                mediumCount={3}
-                hardCount={2}
-              />
-            </>
           )}
         </ScrollView>
 
-        <View
-          style={[styles.footerContainer, { paddingBottom: insets.bottom }]}
-        >
-          <StudyActions
-            onStudyPress={() => router.navigate('/study/flashcard/1')}
-            onQuizPress={() => setQuizModalVisible(true)}
-          />
-        </View>
+        {data && (
+          <>
+            <View
+              style={[styles.footerContainer, { paddingBottom: insets.bottom }]}
+            >
+              <StudyActions
+                onStudyPress={() =>
+                  router.navigate(`/study/flashcard/${deckId}`)
+                }
+                onQuizPress={() => setQuizModalVisible(true)}
+              />
+            </View>
 
-        {activeTab === 'words' && (
-          <TouchableOpacity
-            style={styles.fab}
-            onPress={() => setAddWordModalVisible(true)}
-          >
-            <Feather name="plus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
+            {activeTab === 'words' && (
+              <TouchableOpacity
+                style={styles.fab}
+                onPress={() => setAddWordModalVisible(true)}
+              >
+                <Feather name="plus" size={28} color="#FFFFFF" />
+              </TouchableOpacity>
+            )}
+          </>
         )}
       </View>
 

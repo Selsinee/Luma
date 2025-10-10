@@ -10,7 +10,7 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
       <Stack.Screen
-        name="deck-details"
+        name="deck/[deckId]"
         options={{
           title: 'Deck Details',
         }}

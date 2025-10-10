@@ -5,6 +5,7 @@
 import type { Deck } from '../models/Deck';
 import type { DeckCreate } from '../models/DeckCreate';
 import type { DeckDetail } from '../models/DeckDetail';
+import type { DeckListResponse } from '../models/DeckListResponse';
 import type { DeckNeedsReview } from '../models/DeckNeedsReview';
 import type { DeckUpdate } from '../models/DeckUpdate';
 import type { DeckWithProgress } from '../models/DeckWithProgress';
@@ -34,20 +35,23 @@ export class DecksService {
     }
     /**
      * Read Decks For User
-     * Gets a list of all decks created by the authenticated user.
-     * Can be filtered by category.
+     * Gets a list of all decks created by the authenticated user, including progress stats.
+     * Can be filtered by category and a search query.
      * @param category
-     * @returns Deck Successful Response
+     * @param query
+     * @returns DeckListResponse Successful Response
      * @throws ApiError
      */
     public static getDecksByUser(
         category?: (string | null),
-    ): CancelablePromise<Array<Deck>> {
+        query?: (string | null),
+    ): CancelablePromise<DeckListResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/decks/',
             query: {
                 'category': category,
+                'query': query,
             },
             errors: {
                 422: `Validation Error`,
@@ -80,7 +84,8 @@ export class DecksService {
     }
     /**
      * Read Deck
-     * Gets the detailed information for a single deck, including its words and stats.
+     * Gets the detailed information for a single deck, including its words
+     * with user-specific progress and calculated stats.
      * @param deckId
      * @returns DeckDetail Successful Response
      * @throws ApiError

@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -21,16 +22,14 @@ const StatRow: React.FC<StatRowProps> = ({ label, value }) => {
 // --- Main component that renders the card ---
 interface StudyStatisticsProps {
   studiedToday: number;
-  lastStudied: string;
+  lastStudied?: string | null;
   overallProgress: number;
-  completionRate: number;
 }
 
 const StudyStatistics: React.FC<StudyStatisticsProps> = ({
   studiedToday,
   lastStudied,
   overallProgress,
-  completionRate,
 }) => {
   return (
     <View style={styles.card}>
@@ -41,9 +40,15 @@ const StudyStatistics: React.FC<StudyStatisticsProps> = ({
 
       <View style={styles.statsContainer}>
         <StatRow label="Studied Today" value={`${studiedToday} words`} />
-        <StatRow label="Last Studied" value={lastStudied} />
+        <StatRow
+          label="Last Studied"
+          value={
+            lastStudied
+              ? format(new Date(lastStudied), 'eee, MMM dd, yyyy')
+              : 'Never'
+          }
+        />
         <StatRow label="Overall Progress" value={`${overallProgress}%`} />
-        <StatRow label="Completion Rate" value={`${completionRate}%`} />
       </View>
     </View>
   );

@@ -1,32 +1,22 @@
+import { DeckListItem } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DeckOptionsMenu } from './DeckOptionsMenu';
 
-// New props interface to include category and studiedToday
-interface DeckCardDetailedProps {
-  title: string;
-  description: string;
-  category: string;
-  lastStudied: string;
-  studiedToday: number;
-  currentProgress: number;
-  totalItems: number;
-}
-
-const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({
+const DeckCardDetailed: React.FC<DeckListItem> = ({
+  id,
   title,
   description,
   category,
-  lastStudied,
-  studiedToday,
-  currentProgress,
-  totalItems,
+  last_studied,
+  studied_today,
+  total_items,
+  current_progress,
 }) => {
-  const percentage =
-    totalItems > 0 ? Math.round((currentProgress / totalItems) * 100) : 0;
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
@@ -53,7 +43,7 @@ const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({
       <TouchableOpacity
         style={styles.cardContainer}
         onPress={() => {
-          router.navigate('/deck-details');
+          router.navigate(`/deck/${id}`);
         }}
       >
         {/* Header Section */}
@@ -80,28 +70,36 @@ const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({
         {/* Progress Bar Section */}
         <View style={styles.progressSection}>
           <Text style={styles.progressLabel}>Progress</Text>
-          <Text style={styles.percentageText}>{percentage}%</Text>
+          <Text style={styles.percentageText}>{current_progress}%</Text>
         </View>
         <View style={styles.progressBarBackground}>
-          <View style={[styles.progressBarFill, { width: `${percentage}%` }]} />
+          <View
+            style={[styles.progressBarFill, { width: `${current_progress}%` }]}
+          />
         </View>
 
         {/* Stats Section */}
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{totalItems} cards</Text>
-            <Text style={styles.statLabel}> · </Text>
-            <Feather name="clock" size={12} color="#8A8A8A" />
-            <Text style={styles.statLabel}> {lastStudied}</Text>
+            <Text style={styles.statValue}>{total_items} cards</Text>
+            {last_studied && (
+              <>
+                <Text style={styles.statLabel}> · </Text>
+                <Feather name="clock" size={12} color="#8A8A8A" />
+                <Text style={styles.statLabel}>
+                  {format(new Date(last_studied), 'eee, MMM dd, yyyy')}
+                </Text>
+              </>
+            )}
           </View>
-          <Text style={styles.statLabel}>{studiedToday} studied today</Text>
+          <Text style={styles.statLabel}>{studied_today} studied today</Text>
         </View>
 
         {/* Action Button */}
         <TouchableOpacity
           style={styles.studyButton}
           onPress={() => {
-            router.navigate('/deck-details');
+            router.navigate(`/deck/${id}`);
           }}
         >
           <Text style={styles.studyButtonText}>Study Now</Text>

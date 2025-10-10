@@ -1,4 +1,6 @@
+import { StatusEnum, WordWithProgress } from '@/api';
 import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import * as Speech from 'expo-speech';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -6,28 +8,14 @@ import DifficultyTag from '../tags/DifficultyTag';
 import MasteredTag from '../tags/MasteredTag';
 import { WordOptionsMenu } from './WordOptionsMenu';
 
-// Define the types for the card's props
-type Difficulty = 'easy' | 'medium' | 'hard';
-type Status = 'mastered' | 'learning';
-
-export interface WordCardProps {
-  id: string;
-  word: string;
-  difficulty: Difficulty;
-  status?: Status;
-  definition: string;
-  example: string;
-  lastReviewed: string;
-}
-
-const WordCard: React.FC<WordCardProps> = ({
+const WordCard: React.FC<WordWithProgress> = ({
   id,
   word,
   difficulty,
   status,
   definition,
   example,
-  lastReviewed,
+  last_reviewed_at,
 }) => {
   // ✨ Local state to manage the mastered status
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -52,9 +40,8 @@ const WordCard: React.FC<WordCardProps> = ({
     });
   };
 
-  // ✨ Function to toggle the mastery status
   const handleToggleMastery = () => {
-    const newStatus = isMastered ? 'learning' : 'mastered';
+    const newStatus = isMastered ? StatusEnum.LEARNING : StatusEnum.MASTERED;
     setCurrentStatus(newStatus);
     // In a real app, you would also call a function from props here
     // to update the state in your database, e.g., onStatusChange(id, newStatus);
@@ -96,14 +83,18 @@ const WordCard: React.FC<WordCardProps> = ({
         <Text style={styles.sectionText}>{example}</Text>
       </View>
 
-      <Text style={styles.footerText}>Last reviewed: {lastReviewed}</Text>
+      {last_reviewed_at && (
+        <Text style={styles.footerText}>
+          Last reviewed:{' '}
+          {format(new Date(last_reviewed_at), 'eee, MMM dd, yyyy')}
+        </Text>
+      )}
 
-      {/* ✨ Pass the current status and toggle handler to the menu ✨ */}
       <WordOptionsMenu
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}
         menuPosition={menuPosition}
-        status={currentStatus}
+        status={status}
         onToggleMastery={handleToggleMastery}
       />
     </View>

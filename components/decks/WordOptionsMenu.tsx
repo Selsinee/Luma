@@ -1,3 +1,4 @@
+import { StatusEnum } from '@/api';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -40,13 +41,12 @@ const MenuItem: React.FC<MenuItemProps> = ({
   );
 };
 
-// --- Main Modal Menu Component ---
 interface WordOptionsMenuProps {
   isVisible: boolean;
   onClose: () => void;
   menuPosition: { top: number; right: number };
-  status?: 'mastered' | 'learning'; // ✨ NEW PROP
-  onToggleMastery: () => void; // ✨ NEW PROP
+  status?: StatusEnum | null;
+  onToggleMastery: () => void;
 }
 
 const Separator = () => <View style={styles.separator} />;

@@ -1,3 +1,4 @@
+import { DifficultyEnum, StatusEnum } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
@@ -11,8 +12,8 @@ import {
 } from 'react-native';
 
 // --- Types ---
-type Difficulty = 'easy' | 'medium' | 'hard';
-type Progress = 'all' | 'mastered' | 'learning';
+type Difficulty = DifficultyEnum;
+type Progress = 'all' | StatusEnum;
 type SortBy = 'alphabetical' | 'difficulty' | 'recent';
 
 export interface FilterState {
@@ -107,7 +108,7 @@ export const FilterOptionsMenu: React.FC<FilterOptionsMenuProps> = ({
   };
 
   const handleReset = () => {
-    setDifficulties(new Set(['easy', 'medium', 'hard']));
+    setDifficulties(new Set(Object.values(DifficultyEnum)));
     setProgress('all');
     setSortBy('alphabetical');
   };
@@ -145,22 +146,22 @@ export const FilterOptionsMenu: React.FC<FilterOptionsMenuProps> = ({
             label="Easy"
             count={1}
             color="#2E7D32"
-            isSelected={difficulties.has('easy')}
-            onPress={() => handleDifficultyToggle('easy')}
+            isSelected={difficulties.has(DifficultyEnum.EASY)}
+            onPress={() => handleDifficultyToggle(DifficultyEnum.EASY)}
           />
           <CheckboxItem
             label="Medium"
             count={3}
             color="#FFC107"
-            isSelected={difficulties.has('medium')}
-            onPress={() => handleDifficultyToggle('medium')}
+            isSelected={difficulties.has(DifficultyEnum.MEDIUM)}
+            onPress={() => handleDifficultyToggle(DifficultyEnum.MEDIUM)}
           />
           <CheckboxItem
             label="Hard"
             count={2}
             color="#D32F2F"
-            isSelected={difficulties.has('hard')}
-            onPress={() => handleDifficultyToggle('hard')}
+            isSelected={difficulties.has(DifficultyEnum.HARD)}
+            onPress={() => handleDifficultyToggle(DifficultyEnum.HARD)}
           />
 
           <Separator />
@@ -177,15 +178,15 @@ export const FilterOptionsMenu: React.FC<FilterOptionsMenuProps> = ({
             label="Mastered"
             count={3}
             icon="check-circle"
-            isSelected={progress === 'mastered'}
-            onPress={() => setProgress('mastered')}
+            isSelected={progress === StatusEnum.MASTERED}
+            onPress={() => setProgress(StatusEnum.MASTERED)}
           />
           <RadioItem
             label="Learning"
             count={3}
             icon="clock"
-            isSelected={progress === 'learning'}
-            onPress={() => setProgress('learning')}
+            isSelected={progress === StatusEnum.LEARNING}
+            onPress={() => setProgress(StatusEnum.LEARNING)}
           />
 
           <Separator />

@@ -1,16 +1,9 @@
+import { DeckDetail } from '@/api';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DifficultyCard from './DifficultyCard';
 
-interface DeckDetailsProps {
-  description: string;
-  totalWords: number;
-  masteryPercent: number;
-  wordsMastered: number;
-  easyCount: number;
-  mediumCount: number;
-  hardCount: number;
-}
+interface DeckDetailsProps extends DeckDetail {}
 
 interface StatDisplayProps {
   value: string;
@@ -28,32 +21,37 @@ const StatDisplay: React.FC<StatDisplayProps> = ({ value, label }) => {
 
 const DeckData: React.FC<DeckDetailsProps> = ({
   description,
-  totalWords,
-  masteryPercent,
-  wordsMastered,
-  easyCount,
-  mediumCount,
-  hardCount,
+  category,
+  words_learning,
+  words_mastered,
+  words = [],
+  easy_count,
+  medium_count,
+  hard_count,
 }) => {
+  const totalWords = words.length ?? 0;
+  const masteryPercentage = totalWords
+    ? Math.round((words_mastered / totalWords) * 100)
+    : 0;
   return (
     <View>
       <Text style={styles.description}>{description}</Text>
 
       <View style={styles.statsRow}>
         <StatDisplay value={totalWords.toString()} label="words" />
-        <StatDisplay value={`${masteryPercent}%`} label="Mastery" />
+        <StatDisplay value={`${masteryPercentage}%`} label="Mastery" />
       </View>
 
       <View style={styles.progressContainer}>
         <View style={styles.progressLabels}>
           <Text style={styles.progressTitle}>Overall Progress</Text>
           <Text style={styles.progressSubtitle}>
-            {wordsMastered}/{totalWords} words mastered
+            {words_mastered}/{totalWords} words mastered
           </Text>
         </View>
         <View style={styles.progressBarBackground}>
           <View
-            style={[styles.progressBarFill, { width: `${masteryPercent}%` }]}
+            style={[styles.progressBarFill, { width: `${masteryPercentage}%` }]}
           />
         </View>
       </View>
@@ -61,9 +59,9 @@ const DeckData: React.FC<DeckDetailsProps> = ({
       <View>
         <Text style={styles.difficultyTitle}>Difficulty Distribution</Text>
         <View style={styles.difficultyCardsRow}>
-          <DifficultyCard count={easyCount} label="easy" />
-          <DifficultyCard count={mediumCount} label="medium" />
-          <DifficultyCard count={hardCount} label="hard" />
+          <DifficultyCard count={easy_count} label="easy" />
+          <DifficultyCard count={medium_count} label="medium" />
+          <DifficultyCard count={hard_count} label="hard" />
         </View>
       </View>
     </View>

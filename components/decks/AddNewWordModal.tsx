@@ -1,4 +1,6 @@
+import { DifficultyEnum } from '@/api';
 import Colors from '@/constants/Colors';
+import capitalizeFirstLetter from '@/utils/capitalizeFirstLetter';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -18,9 +20,9 @@ import {
 interface DifficultyOptionProps {
   label: string;
   description: string;
-  value: 'easy' | 'medium' | 'hard';
-  selectedValue: 'easy' | 'medium' | 'hard';
-  onSelect: (value: 'easy' | 'medium' | 'hard') => void;
+  value: DifficultyEnum;
+  selectedValue: DifficultyEnum;
+  onSelect: (value: DifficultyEnum) => void;
 }
 
 const DifficultyOption: React.FC<DifficultyOptionProps> = ({
@@ -75,7 +77,7 @@ interface AddNewWordModalProps {
     word: string;
     definition: string;
     example: string;
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: DifficultyEnum;
   }) => void;
 }
 
@@ -87,8 +89,8 @@ export const AddNewWordModal: React.FC<AddNewWordModalProps> = ({
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(
-    'medium',
+  const [difficulty, setDifficulty] = useState<DifficultyEnum>(
+    DifficultyEnum.MEDIUM,
   ); // Default
 
   const handleAddWord = () => {
@@ -104,7 +106,7 @@ export const AddNewWordModal: React.FC<AddNewWordModalProps> = ({
     setWord('');
     setDefinition('');
     setExample('');
-    setDifficulty('medium');
+    setDifficulty(DifficultyEnum.MEDIUM);
     onClose();
   };
 
@@ -173,23 +175,23 @@ export const AddNewWordModal: React.FC<AddNewWordModalProps> = ({
             {/* Difficulty Level Selector */}
             <Text style={styles.inputLabel}>Difficulty Level</Text>
             <DifficultyOption
-              label="Easy"
+              label={capitalizeFirstLetter(DifficultyEnum.EASY)}
               description="Common words you see often"
-              value="easy"
+              value={DifficultyEnum.EASY}
               selectedValue={difficulty}
               onSelect={setDifficulty}
             />
             <DifficultyOption
-              label="Medium"
+              label={capitalizeFirstLetter(DifficultyEnum.MEDIUM)}
               description="Words that need some practice"
-              value="medium"
+              value={DifficultyEnum.MEDIUM}
               selectedValue={difficulty}
               onSelect={setDifficulty}
             />
             <DifficultyOption
-              label="Hard"
+              label={capitalizeFirstLetter(DifficultyEnum.HARD)}
               description="Challenging words to master"
-              value="hard"
+              value={DifficultyEnum.HARD}
               selectedValue={difficulty}
               onSelect={setDifficulty}
             />
