@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
-    flex: 1,
+    flexGrow: 1,
   },
 });
 
