@@ -8,7 +8,6 @@ import { QuizOptionsModal } from '@/components/quiz/QuizOptionsModal';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -77,19 +76,6 @@ const DeckDetails = () => {
     }
   };
 
-  const handleAddWord = (wordData: {
-    word: string;
-    definition: string;
-    example: string;
-    difficulty: DifficultyEnum;
-  }) => {
-    Alert.alert(
-      'New Word Added!',
-      `Word: ${wordData.word}\nDefinition: ${wordData.definition}\nDifficulty: ${wordData.difficulty}`,
-    );
-    // In a real app, you would dispatch an action or call an API to add the word to your deck
-  };
-
   const handleApplyFilters = (newFilters: FilterState) => {
     console.log('Applying filters:', newFilters);
     setFilters(newFilters);
@@ -101,6 +87,7 @@ const DeckDetails = () => {
         options={{
           header: () => (
             <DeckHeader
+              deckId={deckId}
               title={data?.title ?? ''}
               category={data?.category ?? ''}
             />
@@ -174,20 +161,33 @@ const DeckDetails = () => {
 
         {data && (
           <>
-            <View
-              style={[styles.footerContainer, { paddingBottom: insets.bottom }]}
-            >
-              <StudyActions
-                onStudyPress={() =>
-                  router.navigate(`/study/flashcard/${deckId}`)
-                }
-                onQuizPress={() => setQuizModalVisible(true)}
-              />
-            </View>
+            {data.words && data.words.length > 0 && (
+              <View
+                style={[
+                  styles.footerContainer,
+                  { paddingBottom: insets.bottom },
+                ]}
+              >
+                <StudyActions
+                  onStudyPress={() =>
+                    router.navigate(`/study/flashcard/${deckId}`)
+                  }
+                  onQuizPress={() => setQuizModalVisible(true)}
+                />
+              </View>
+            )}
 
             {activeTab === 'words' && (
               <TouchableOpacity
-                style={styles.fab}
+                style={[
+                  styles.fab,
+                  {
+                    bottom:
+                      data.words && data.words.length > 0
+                        ? insets.bottom + 70
+                        : insets.bottom + 20,
+                  },
+                ]}
                 onPress={() => setAddWordModalVisible(true)}
               >
                 <Feather name="plus" size={28} color="#FFFFFF" />
@@ -208,7 +208,6 @@ const DeckDetails = () => {
       <AddNewWordModal
         isVisible={isAddWordModalVisible}
         onClose={() => setAddWordModalVisible(false)}
-        onAddWord={handleAddWord}
       />
 
       <QuizOptionsModal
@@ -222,7 +221,6 @@ const DeckDetails = () => {
 export default DeckDetails;
 
 const styles = StyleSheet.create({
-  // ✨ NEW Styles for the layout ✨
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',

@@ -1,7 +1,9 @@
 import { DifficultyEnum } from '@/api';
 import Colors from '@/constants/Colors';
+import { useAddWord } from '@/hooks/useAddNewWord';
 import capitalizeFirstLetter from '@/utils/capitalizeFirstLetter';
 import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -73,27 +75,22 @@ const DifficultyOption: React.FC<DifficultyOptionProps> = ({
 interface AddNewWordModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onAddWord: (wordData: {
-    word: string;
-    definition: string;
-    example: string;
-    difficulty: DifficultyEnum;
-  }) => void;
 }
 
 export const AddNewWordModal: React.FC<AddNewWordModalProps> = ({
   isVisible,
   onClose,
-  onAddWord,
 }) => {
+  const { deckId } = useLocalSearchParams<{ deckId: string }>();
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
   const [difficulty, setDifficulty] = useState<DifficultyEnum>(
     DifficultyEnum.MEDIUM,
-  ); // Default
+  );
+  const { addWord, isLoading } = useAddWord(deckId);
 
-  const handleAddWord = () => {
+  const handleAddWord = async () => {
     if (!word || !definition) {
       Alert.alert(
         'Missing Information',
@@ -101,18 +98,28 @@ export const AddNewWordModal: React.FC<AddNewWordModalProps> = ({
       );
       return;
     }
-    onAddWord({ word, definition, example, difficulty });
-    // Reset form after adding
-    setWord('');
-    setDefinition('');
-    setExample('');
-    setDifficulty(DifficultyEnum.MEDIUM);
-    onClose();
+
+    try {
+      await addWord({
+        word: word.trim(),
+        definition: definition.trim(),
+        example: example.trim() || undefined,
+        difficulty,
+      });
+
+      setWord('');
+      setDefinition('');
+      setExample('');
+      setDifficulty(DifficultyEnum.MEDIUM);
+      onClose();
+    } catch (e) {
+      console.error('Failed to add word:', e);
+    }
   };
 
   return (
     <Modal
-      animationType="slide" // Use slide for a more dynamic feel
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={onClose}

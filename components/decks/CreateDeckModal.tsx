@@ -1,3 +1,4 @@
+import { useCreateDeck } from '@/hooks/useCreateDeck';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -56,7 +57,6 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
   );
 };
 
-// --- Main Modal Component ---
 interface CreateDeckModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -69,9 +69,9 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { createDeckAsync, isLoading } = useCreateDeck();
 
-  const handleCreate = () => {
-    // Add validation logic here
+  const handleCreate = async () => {
     if (!deckTitle || !selectedCategory) {
       Alert.alert(
         'Missing Information',
@@ -79,7 +79,16 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
       );
       return;
     }
-    // Handle deck creation logic...
+
+    await createDeckAsync({
+      title: deckTitle.trim(),
+      description: description.trim(),
+      category: selectedCategory,
+    });
+
+    setDeckTitle('');
+    setDescription('');
+    setSelectedCategory(null);
     Alert.alert('Success', `Deck "${deckTitle}" created!`);
     onClose();
   };
@@ -147,9 +156,12 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
             <TouchableOpacity
               style={[styles.button, styles.createButton]}
               onPress={handleCreate}
+              disabled={isLoading}
             >
               <Feather name="plus" size={16} color="#FFFFFF" />
-              <Text style={styles.createButtonText}>Create Deck</Text>
+              <Text style={styles.createButtonText}>
+                {isLoading ? 'Creating...' : 'Create Deck'}
+              </Text>
             </TouchableOpacity>
           </View>
 

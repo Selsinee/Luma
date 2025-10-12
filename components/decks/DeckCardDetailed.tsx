@@ -35,6 +35,7 @@ const DeckCardDetailed: React.FC<DeckListItem> = ({
   return (
     <>
       <DeckOptionsMenu
+        deckId={id}
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}
         menuPosition={menuPosition}

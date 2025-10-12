@@ -17,7 +17,6 @@ const WordCard: React.FC<WordWithProgress> = ({
   example,
   last_reviewed_at,
 }) => {
-  // ✨ Local state to manage the mastered status
   const [currentStatus, setCurrentStatus] = useState(status);
   const isMastered = currentStatus === 'mastered';
 
@@ -91,6 +90,7 @@ const WordCard: React.FC<WordWithProgress> = ({
       )}
 
       <WordOptionsMenu
+        wordId={id}
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}
         menuPosition={menuPosition}

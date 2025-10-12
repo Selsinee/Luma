@@ -1,22 +1,17 @@
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BaseHeader from '../BaseHeader';
 import { DeckOptionsMenu } from './DeckOptionsMenu';
 
 // Props for the Deck Header component
 interface DeckHeaderProps {
+  deckId: string;
   title: string;
   category: string;
 }
 
-const DeckHeader: React.FC<DeckHeaderProps> = ({ title, category }) => {
-  // Get the top inset to add padding for the status bar
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
-
+const DeckHeader: React.FC<DeckHeaderProps> = ({ deckId, title, category }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const triggerRef = useRef<View>(null);
@@ -50,6 +45,7 @@ const DeckHeader: React.FC<DeckHeaderProps> = ({ title, category }) => {
       />
 
       <DeckOptionsMenu
+        deckId={deckId}
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}
         menuPosition={menuPosition}

@@ -1,5 +1,7 @@
 import { StatusEnum } from '@/api';
+import { useDeleteWord } from '@/hooks/useDeleteWord';
 import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
   Alert,
@@ -42,6 +44,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 interface WordOptionsMenuProps {
+  wordId: string;
   isVisible: boolean;
   onClose: () => void;
   menuPosition: { top: number; right: number };
@@ -52,12 +55,34 @@ interface WordOptionsMenuProps {
 const Separator = () => <View style={styles.separator} />;
 
 export const WordOptionsMenu: React.FC<WordOptionsMenuProps> = ({
+  wordId,
   isVisible,
   onClose,
   menuPosition,
   status,
   onToggleMastery,
 }) => {
+  const { deckId } = useLocalSearchParams<{ deckId: string }>();
+  const { deleteWord } = useDeleteWord();
+
+  const handleDeletePress = () => {
+    Alert.alert(
+      'Delete Word',
+      'Are you sure you want to permanently delete this word?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteWord({ deckId, wordId });
+            onClose();
+          },
+        },
+      ],
+    );
+  };
+
   const isMastered = status === 'mastered';
   const handlePress = (action: string) => {
     Alert.alert(action);
@@ -73,7 +98,6 @@ export const WordOptionsMenu: React.FC<WordOptionsMenuProps> = ({
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <View style={[styles.menuContainer, menuPosition]}>
-          {/* ✨ Dynamic first button ✨ */}
           <MenuItem
             icon="star"
             label={isMastered ? 'Mark as Learning' : 'Mark as Mastered'}
@@ -104,7 +128,7 @@ export const WordOptionsMenu: React.FC<WordOptionsMenuProps> = ({
           <MenuItem
             icon="trash-2"
             label="Delete"
-            onPress={() => handlePress('Delete')}
+            onPress={handleDeletePress}
             isDestructive
           />
         </View>

@@ -1,3 +1,4 @@
+import { useDeleteDeck } from '@/hooks/useDeleteDeck';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -40,8 +41,8 @@ const MenuItem: React.FC<MenuItemProps> = ({
   );
 };
 
-// --- Main Modal Menu Component ---
 interface DeckOptionsMenuProps {
+  deckId: string;
   isVisible: boolean;
   onClose: () => void;
   menuPosition: { top: number; right: number };
@@ -51,11 +52,33 @@ interface DeckOptionsMenuProps {
 const Separator = () => <View style={styles.separator} />;
 
 export const DeckOptionsMenu: React.FC<DeckOptionsMenuProps> = ({
+  deckId,
   isVisible,
   onClose,
   menuPosition,
   hideStudyOptions = false,
 }) => {
+  const { deleteDeck } = useDeleteDeck();
+
+  const handleDeletePress = () => {
+    Alert.alert(
+      'Delete Deck',
+      'Are you sure you want to delete this deck and all of its words? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            // 3. Call the deleteDeck function from the hook
+            deleteDeck(deckId);
+            onClose(); // Close the menu
+          },
+        },
+      ],
+    );
+  };
+
   const handlePress = (action: string) => {
     Alert.alert(action);
     onClose();
@@ -110,7 +133,7 @@ export const DeckOptionsMenu: React.FC<DeckOptionsMenuProps> = ({
           <MenuItem
             icon="trash-2"
             label="Delete"
-            onPress={() => handlePress('Delete')}
+            onPress={handleDeletePress}
             isDestructive
           />
         </View>
