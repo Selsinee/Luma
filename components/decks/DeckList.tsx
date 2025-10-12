@@ -65,7 +65,7 @@ const DeckList: React.FC = () => {
         }
         data={decks}
         // renderItem tells the list how to render each individual deck
-        renderItem={({ item }) => <DeckCardDetailed {...item} />}
+        renderItem={({ item }) => <DeckCardDetailed item={item} />}
         // keyExtractor provides a unique ID for each item, crucial for performance
         keyExtractor={item => item.id}
         // Adds padding to the content area

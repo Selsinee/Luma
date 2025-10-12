@@ -7,16 +7,21 @@ import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DeckOptionsMenu } from './DeckOptionsMenu';
 
-const DeckCardDetailed: React.FC<DeckListItem> = ({
-  id,
-  title,
-  description,
-  category,
-  last_studied,
-  studied_today,
-  total_items,
-  current_progress,
-}) => {
+interface DeckCardDetailedProps {
+  item: DeckListItem;
+}
+
+const DeckCardDetailed: React.FC<DeckCardDetailedProps> = ({ item }) => {
+  const {
+    id,
+    title,
+    description,
+    category,
+    last_studied,
+    studied_today,
+    total_items,
+    current_progress,
+  } = item;
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
@@ -35,7 +40,7 @@ const DeckCardDetailed: React.FC<DeckListItem> = ({
   return (
     <>
       <DeckOptionsMenu
-        deckId={id}
+        deck={item}
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}
         menuPosition={menuPosition}
@@ -47,7 +52,6 @@ const DeckCardDetailed: React.FC<DeckListItem> = ({
           router.navigate(`/deck/${id}`);
         }}
       >
-        {/* Header Section */}
         <View style={styles.headerRow}>
           <View style={styles.headerInfo}>
             <View style={styles.iconContainer}>

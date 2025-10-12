@@ -87,7 +87,7 @@ const DeckDetails = () => {
         options={{
           header: () => (
             <DeckHeader
-              deckId={deckId}
+              deck={data}
               title={data?.title ?? ''}
               category={data?.category ?? ''}
             />

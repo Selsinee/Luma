@@ -1,17 +1,17 @@
+import { DeckDetail } from '@/api';
 import { Feather } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import BaseHeader from '../BaseHeader';
 import { DeckOptionsMenu } from './DeckOptionsMenu';
 
-// Props for the Deck Header component
 interface DeckHeaderProps {
-  deckId: string;
+  deck?: DeckDetail;
   title: string;
   category: string;
 }
 
-const DeckHeader: React.FC<DeckHeaderProps> = ({ deckId, title, category }) => {
+const DeckHeader: React.FC<DeckHeaderProps> = ({ deck, title, category }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const triggerRef = useRef<View>(null);
@@ -44,13 +44,15 @@ const DeckHeader: React.FC<DeckHeaderProps> = ({ deckId, title, category }) => {
         }
       />
 
-      <DeckOptionsMenu
-        deckId={deckId}
-        isVisible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        menuPosition={menuPosition}
-        hideStudyOptions
-      />
+      {deck && (
+        <DeckOptionsMenu
+          deck={deck}
+          isVisible={menuVisible}
+          onClose={() => setMenuVisible(false)}
+          menuPosition={menuPosition}
+          hideStudyOptions
+        />
+      )}
     </View>
   );
 };

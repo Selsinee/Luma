@@ -1,6 +1,8 @@
+import { DeckDetail, DeckListItem } from '@/api';
 import { useDeleteDeck } from '@/hooks/useDeleteDeck';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
   Alert,
   Modal,
@@ -10,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { EditDeckModal } from './EditDeckModal';
 
 // --- Reusable sub-component for a single menu item ---
 interface MenuItemProps {
@@ -42,7 +45,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 interface DeckOptionsMenuProps {
-  deckId: string;
+  deck: DeckListItem | DeckDetail;
   isVisible: boolean;
   onClose: () => void;
   menuPosition: { top: number; right: number };
@@ -52,12 +55,19 @@ interface DeckOptionsMenuProps {
 const Separator = () => <View style={styles.separator} />;
 
 export const DeckOptionsMenu: React.FC<DeckOptionsMenuProps> = ({
-  deckId,
+  deck,
   isVisible,
   onClose,
   menuPosition,
   hideStudyOptions = false,
 }) => {
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const router = useRouter();
+
+  const handleEditPress = () => {
+    onClose(); // Close the options menu first
+    setEditModalVisible(true); // Then open the edit modal
+  };
   const { deleteDeck } = useDeleteDeck();
 
   const handleDeletePress = () => {
@@ -71,7 +81,7 @@ export const DeckOptionsMenu: React.FC<DeckOptionsMenuProps> = ({
           style: 'destructive',
           onPress: () => {
             // 3. Call the deleteDeck function from the hook
-            deleteDeck(deckId);
+            deleteDeck(deck.id);
             onClose(); // Close the menu
           },
         },
@@ -85,60 +95,70 @@ export const DeckOptionsMenu: React.FC<DeckOptionsMenuProps> = ({
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <View style={[styles.menuContainer, menuPosition]}>
-          {!hideStudyOptions && (
-            <>
-              <MenuItem
-                icon="play"
-                label="Start Study"
-                onPress={() => handlePress('Start Study')}
-              />
-              <MenuItem
-                icon="cpu"
-                label="Take Quiz"
-                onPress={() => handlePress('Take Quiz')}
-              />
-              <Separator />
-            </>
-          )}
+    <>
+      <Modal
+        visible={isVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={onClose}
+      >
+        <Pressable style={styles.backdrop} onPress={onClose}>
+          <View style={[styles.menuContainer, menuPosition]}>
+            {!hideStudyOptions && (
+              <>
+                <MenuItem
+                  icon="play"
+                  label="Start Study"
+                  onPress={() => router.navigate(`/study/flashcard/${deck.id}`)}
+                />
+                <MenuItem
+                  icon="cpu"
+                  label="Take Quiz"
+                  onPress={() => handlePress('Take Quiz')}
+                />
+                <Separator />
+              </>
+            )}
 
-          <MenuItem
-            icon="edit-2"
-            label="Edit Deck"
-            onPress={() => handlePress('Edit Deck')}
-          />
-          <MenuItem
-            icon="copy"
-            label="Duplicate"
-            onPress={() => handlePress('Duplicate')}
-          />
-          <MenuItem
-            icon="share-2"
-            label="Share"
-            onPress={() => handlePress('Share')}
-          />
-          <Separator />
-          <MenuItem
-            icon="archive"
-            label="Archive"
-            onPress={() => handlePress('Archive')}
-          />
-          <MenuItem
-            icon="trash-2"
-            label="Delete"
-            onPress={handleDeletePress}
-            isDestructive
-          />
-        </View>
-      </Pressable>
-    </Modal>
+            <MenuItem
+              icon="edit-2"
+              label="Edit Deck"
+              onPress={handleEditPress}
+            />
+            <MenuItem
+              icon="copy"
+              label="Duplicate"
+              onPress={() => handlePress('Duplicate')}
+            />
+            <MenuItem
+              icon="share-2"
+              label="Share"
+              onPress={() => handlePress('Share')}
+            />
+            <Separator />
+            <MenuItem
+              icon="archive"
+              label="Archive"
+              onPress={() => handlePress('Archive')}
+            />
+            <MenuItem
+              icon="trash-2"
+              label="Delete"
+              onPress={handleDeletePress}
+              isDestructive
+            />
+          </View>
+        </Pressable>
+      </Modal>
+
+      {deck && (
+        <EditDeckModal
+          isVisible={isEditModalVisible}
+          onClose={() => setEditModalVisible(false)}
+          deck={deck}
+        />
+      )}
+    </>
   );
 };
 
