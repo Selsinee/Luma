@@ -1,10 +1,13 @@
 // components/decks/EditDeckModal.tsx
 import { DeckDetail, DeckListItem, DeckUpdate } from '@/api';
+import { useCategories } from '@/hooks/useCategories';
 import { useUpdateDeck } from '@/hooks/useUpdateDeck';
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  FlatList,
   Modal,
   Pressable,
   StyleSheet,
@@ -28,14 +31,17 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({
   const [title, setTitle] = useState(deck.title);
   const [description, setDescription] = useState(deck.description || '');
   const [category, setCategory] = useState(deck.category);
+  const [isPickerVisible, setPickerVisible] = useState(false);
 
   const { updateDeck, isLoading } = useUpdateDeck();
+  const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
   useEffect(() => {
     if (isVisible) {
       setTitle(deck.title);
       setDescription(deck.description || '');
       setCategory(deck.category);
+      setPickerVisible(false);
     }
   }, [isVisible, deck]);
 
@@ -57,6 +63,11 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({
     } catch (e) {
       console.error('Failed to update deck:', e);
     }
+  };
+
+  const handleSelectCategory = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    setPickerVisible(false); // Hide the dropdown after selection
   };
 
   return (
@@ -99,9 +110,44 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({
           />
 
           <Text style={styles.label}>Category</Text>
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerText}>{category}</Text>
-            <Feather name="chevron-down" size={20} color="#555" />
+          <View>
+            <TouchableOpacity
+              style={styles.pickerContainer}
+              onPress={() => setPickerVisible(!isPickerVisible)}
+            >
+              <Text style={styles.pickerText}>{category}</Text>
+              <Feather
+                name={isPickerVisible ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#555"
+              />
+            </TouchableOpacity>
+
+            {isPickerVisible && (
+              <View style={styles.dropdown}>
+                {isLoadingCategories ? (
+                  <ActivityIndicator />
+                ) : (
+                  <FlatList
+                    data={categories}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.dropdownItem}
+                        onPress={() => handleSelectCategory(item.name)}
+                      >
+                        <Feather
+                          name={item.icon_name as keyof typeof Feather.glyphMap}
+                          size={18}
+                          color="#555"
+                        />
+                        <Text style={styles.dropdownItemText}>{item.name}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                )}
+              </View>
+            )}
           </View>
 
           {/* Action Buttons */}
@@ -219,5 +265,28 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 55,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E8E8F0',
+    maxHeight: 150,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    marginLeft: 10,
   },
 });

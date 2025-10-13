@@ -9,6 +9,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AchievementDetail } from './models/AchievementDetail';
 export type { Body_login } from './models/Body_login';
+export type { Category } from './models/Category';
 export type { Deck } from './models/Deck';
 export type { DeckCreate } from './models/DeckCreate';
 export type { DeckDetail } from './models/DeckDetail';
@@ -43,6 +44,7 @@ export type { WordUpdate } from './models/WordUpdate';
 export type { WordWithProgress } from './models/WordWithProgress';
 
 export { AuthenticationService } from './services/AuthenticationService';
+export { CategoriesService } from './services/CategoriesService';
 export { DecksService } from './services/DecksService';
 export { DefaultService } from './services/DefaultService';
 export { StudyService } from './services/StudyService';

@@ -1,7 +1,9 @@
+import { useCategories } from '@/hooks/useCategories';
 import { useCreateDeck } from '@/hooks/useCreateDeck';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Keyboard,
   Modal,
@@ -12,16 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-// --- Reusable sub-component for a single category button ---
-const CATEGORIES = [
-  { id: 'academic', label: 'Academic', icon: 'book-open' as const },
-  { id: 'language', label: 'Language', icon: 'globe' as const },
-  { id: 'medical', label: 'Medical', icon: 'heart' as const },
-  { id: 'business', label: 'Business', icon: 'briefcase' as const },
-  { id: 'test-prep', label: 'Test Prep', icon: 'target' as const },
-  { id: 'general', label: 'General', icon: 'box' as const },
-];
 
 interface CategoryButtonProps {
   label: string;
@@ -70,6 +62,11 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { createDeckAsync, isLoading } = useCreateDeck();
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+    error,
+  } = useCategories();
 
   const handleCreate = async () => {
     if (!deckTitle || !selectedCategory) {
@@ -134,12 +131,14 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
           </Text>
 
           <Text style={styles.label}>Category *</Text>
+          {isLoadingCategories && <ActivityIndicator />}
+          {error && <Text>Could not load categories.</Text>}
           <View style={styles.categoryGrid}>
-            {CATEGORIES.map(category => (
+            {categories?.map(category => (
               <CategoryButton
                 key={category.id}
-                label={category.label}
-                icon={category.icon}
+                label={category.name}
+                icon={category.icon_name as keyof typeof Feather.glyphMap}
                 isSelected={selectedCategory === category.id}
                 onPress={() => setSelectedCategory(category.id)}
               />
