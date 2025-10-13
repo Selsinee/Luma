@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Deck } from '../models/Deck';
+import type { DeckAlmostMastered } from '../models/DeckAlmostMastered';
 import type { DeckCreate } from '../models/DeckCreate';
 import type { DeckDetail } from '../models/DeckDetail';
 import type { DeckListResponse } from '../models/DeckListResponse';
@@ -148,6 +149,18 @@ export class DecksService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * Read Almost Mastered Decks Endpoint
+     * Gets a list of decks that the user has almost mastered (75-99% progress).
+     * @returns DeckAlmostMastered Successful Response
+     * @throws ApiError
+     */
+    public static getAlmostMasteredDecks(): CancelablePromise<Array<DeckAlmostMastered>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/decks/almost-mastered',
         });
     }
 }

@@ -1,23 +1,28 @@
 import Colors from '@/constants/Colors';
+import { useWeeklyStats } from '@/hooks/useWeeklyStats';
+import { formatStudyTime } from '@/utils/formatStudyTime';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import StatBlock from './StatBlock';
 
-// Props for the main widget
-interface WeeklyStatsProps {
-  wordsStudied: number;
-  avgSessions: number;
-  dailyAverage: string; // e.g., "23m"
-  accuracyRate: number; // e.g., 87 for 87%
-}
+const WeeklyStats: React.FC = () => {
+  const { data: stats, isLoading, error } = useWeeklyStats();
 
-const WeeklyStats: React.FC<WeeklyStatsProps> = ({
-  wordsStudied,
-  avgSessions,
-  dailyAverage,
-  accuracyRate,
-}) => {
+  if (isLoading) {
+    return (
+      <View style={styles.widgetContainer}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (error || !stats) {
+    return null;
+  }
+
+  const formattedDailyAverage = formatStudyTime(stats.daily_average_seconds);
+
   return (
     <View style={styles.widgetContainer}>
       <View style={styles.widgetHeader}>
@@ -27,12 +32,21 @@ const WeeklyStats: React.FC<WeeklyStatsProps> = ({
 
       <View style={styles.statsGrid}>
         <View style={styles.statsRow}>
-          <StatBlock value={wordsStudied.toString()} label="Words Studied" />
-          <StatBlock value={avgSessions.toString()} label="Avg. Sessions" />
+          <StatBlock
+            value={stats.words_studied.toString()}
+            label="Words Studied"
+          />
+          <StatBlock
+            value={stats.avg_sessions.toFixed(1)}
+            label="Avg. Sessions"
+          />
         </View>
         <View style={styles.statsRow}>
-          <StatBlock value={dailyAverage} label="Daily Average" />
-          <StatBlock value={`${accuracyRate}%`} label="Accuracy Rate" />
+          <StatBlock value={formattedDailyAverage} label="Daily Average" />
+          <StatBlock
+            value={`${stats.accuracy_rate.toFixed(0)}%`}
+            label="Accuracy Rate"
+          />
         </View>
       </View>
     </View>

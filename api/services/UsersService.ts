@@ -7,6 +7,7 @@ import type { User } from '../models/User';
 import type { UserDashboardStats } from '../models/UserDashboardStats';
 import type { UserProfileUpdate } from '../models/UserProfileUpdate';
 import type { UserSettingsUpdate } from '../models/UserSettingsUpdate';
+import type { WeeklyStats } from '../models/WeeklyStats';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -85,6 +86,18 @@ export class UsersService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/stats',
+        });
+    }
+    /**
+     * Read User Me Weekly Stats
+     * Fetches statistics for the user's activity over the last 7 days.
+     * @returns WeeklyStats Successful Response
+     * @throws ApiError
+     */
+    public static getWeeklyStats(): CancelablePromise<WeeklyStats> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/users/me/weekly-stats',
         });
     }
 }

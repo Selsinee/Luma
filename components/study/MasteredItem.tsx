@@ -1,22 +1,15 @@
+import { DeckAlmostMastered } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Props for a single mastered item
-export interface MasteredItemProps {
-  id: string;
-  title: string;
-  progress: number; // Percentage from 0 to 100
-  wordCount: number;
-  category: string;
-}
-
-const MasteredItem: React.FC<MasteredItemProps> = ({
+const MasteredItem: React.FC<DeckAlmostMastered> = ({
+  id,
   title,
   progress,
-  wordCount,
+  word_count,
   category,
 }) => {
   const router = useRouter();
@@ -34,13 +27,13 @@ const MasteredItem: React.FC<MasteredItemProps> = ({
           <Text style={styles.progressText}>{progress}%</Text>
         </View>
         <Text style={styles.detailsText}>
-          {wordCount} words · {category}
+          {word_count} words · {category}
         </Text>
       </View>
       <TouchableOpacity
         style={styles.finishButton}
         onPress={() => {
-          router.navigate(`/deck-details`);
+          router.navigate(`/deck/${id}`);
         }}
       >
         <Feather name="zap" size={16} color="#FFFFFF" />

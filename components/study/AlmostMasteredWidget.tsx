@@ -1,30 +1,16 @@
 import Colors from '@/constants/Colors';
+import { useAlmostMasteredDecks } from '@/hooks/useAlmostMasteredDecks';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import MasteredItem, { MasteredItemProps } from './MasteredItem';
-
-// Mock data for demonstration purposes
-const MOCK_MASTERED_ITEMS: MasteredItemProps[] = [
-  {
-    id: '1',
-    title: 'Medical Terminology',
-    progress: 89,
-    wordCount: 300,
-    category: 'Medical',
-  },
-  {
-    id: '2',
-    title: 'Business English',
-    progress: 78,
-    wordCount: 180,
-    category: 'Business',
-  },
-];
+import MasteredItem from './MasteredItem';
 
 const AlmostMasteredWidget: React.FC = () => {
-  // In a real app, you would pass this data in as a prop
-  const items = MOCK_MASTERED_ITEMS;
+  const { data: items, error } = useAlmostMasteredDecks();
+
+  if (error || !items || items.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.widgetContainer}>
@@ -34,7 +20,7 @@ const AlmostMasteredWidget: React.FC = () => {
       </View>
 
       <View style={styles.listContainer}>
-        {items.map(item => (
+        {items?.map(item => (
           <MasteredItem key={item.id} {...item} />
         ))}
       </View>

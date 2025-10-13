@@ -11,12 +11,11 @@ export interface StudyItemProps {
 }
 
 const StudyItem: React.FC<StudyItemProps> = ({
-  item: { title, studied_today, progress },
+  item: { id, title, studied_today, progress },
 }) => {
   const router = useRouter();
   return (
     <TouchableOpacity style={styles.itemContainer}>
-      {/* Main content container for everything on the left */}
       <View style={styles.mainContent}>
         <View style={styles.topRow}>
           <Text style={styles.title}>{title}</Text>
@@ -38,7 +37,7 @@ const StudyItem: React.FC<StudyItemProps> = ({
       <TouchableOpacity
         style={styles.arrowContainer}
         onPress={() => {
-          router.navigate(`/deck-details`);
+          router.navigate(`/deck/${id}`);
         }}
       >
         <Feather name="arrow-right" size={18} color="#555" />
