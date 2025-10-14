@@ -8,6 +8,7 @@ import type { UserDashboardStats } from '../models/UserDashboardStats';
 import type { UserProfileUpdate } from '../models/UserProfileUpdate';
 import type { UserSettingsUpdate } from '../models/UserSettingsUpdate';
 import type { WeeklyStats } from '../models/WeeklyStats';
+import type { Word } from '../models/Word';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -98,6 +99,19 @@ export class UsersService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/weekly-stats',
+        });
+    }
+    /**
+     * Read User Me New Words
+     * Gets a list of new words for the currently authenticated user
+     * from their own decks that they have not yet studied.
+     * @returns Word Successful Response
+     * @throws ApiError
+     */
+    public static getUsersMeNewWords(): CancelablePromise<Array<Word>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/users/me/new-words',
         });
     }
 }

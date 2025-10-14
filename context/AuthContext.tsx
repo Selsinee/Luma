@@ -7,6 +7,7 @@ import {
   AuthenticationService,
   Body_login,
   OpenAPI,
+  Token,
   User,
   UserCreate,
   UsersService,
@@ -17,6 +18,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (data: Body_login) => Promise<void>;
   register: (data: UserCreate) => Promise<void>;
+  handleTokenLogin: (data: Token) => Promise<void>;
   logout: () => void;
   refetchUser: () => Promise<void>;
   updateUser: (newUser: User) => void;
@@ -30,7 +32,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. Create a reusable function to fetch user data
   const fetchUser = async () => {
     try {
       const currentUser = await UsersService.getUser();
@@ -39,6 +40,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log('Failed to fetch user.', e);
       // If fetching fails, it likely means the token is invalid, so log out.
       // await logout();
+    }
+  };
+
+  const handleTokenLogin = async (data: Token) => {
+    try {
+      setIsLoading(true);
+      await SecureStore.setItemAsync('authToken', data.access_token);
+      OpenAPI.TOKEN = data.access_token;
+      setUser(data.user);
+    } catch (e) {
+      console.log('Failed to process token login.', errorGenerator(e));
+      Alert.alert('Error', `Failed to sign in. ${errorGenerator(e)}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (data: Body_login) => {
     try {
       setIsLoading(true);
+      console.log('Logging in with', data);
       const response = await AuthenticationService.login(data);
       await SecureStore.setItemAsync('authToken', response.access_token);
       OpenAPI.TOKEN = response.access_token;
@@ -126,6 +142,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         register,
         refetchUser,
         updateUser,
+        handleTokenLogin,
       }}
     >
       {children}

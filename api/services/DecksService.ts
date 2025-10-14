@@ -8,8 +8,8 @@ import type { DeckCreate } from '../models/DeckCreate';
 import type { DeckDetail } from '../models/DeckDetail';
 import type { DeckListResponse } from '../models/DeckListResponse';
 import type { DeckNeedsReview } from '../models/DeckNeedsReview';
+import type { DeckRecentItem } from '../models/DeckRecentItem';
 import type { DeckUpdate } from '../models/DeckUpdate';
-import type { DeckWithProgress } from '../models/DeckWithProgress';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -72,12 +72,12 @@ export class DecksService {
         });
     }
     /**
-     * Read Recently Studied Decks
+     * Read Recently Studied Decks Endpoint
      * Gets a list of the most recently studied decks for the authenticated user.
-     * @returns DeckWithProgress Successful Response
+     * @returns DeckRecentItem Successful Response
      * @throws ApiError
      */
-    public static getRecentlyStudiedDecks(): CancelablePromise<Array<DeckWithProgress>> {
+    public static getRecentlyStudiedDecks(): CancelablePromise<Array<DeckRecentItem>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/decks/recent',

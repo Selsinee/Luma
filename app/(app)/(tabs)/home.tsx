@@ -53,14 +53,7 @@ export default function Index() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={false} />}
       >
-        <StatsWidget
-          wordsStudied={40}
-          dailyGoal={50}
-          streak={7}
-          totalWords={1247}
-          weeklyProgress={5}
-          weeklyGoal={7}
-        />
+        <StatsWidget />
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.newDeckButton}

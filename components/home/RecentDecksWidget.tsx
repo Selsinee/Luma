@@ -1,5 +1,6 @@
 // RecentDecksWidget.tsx
 import Colors from '@/constants/Colors';
+import { useRecentDecks } from '@/hooks/useRecentDecks';
 import { Feather } from '@expo/vector-icons'; // Changed import
 import React from 'react';
 import {
@@ -11,49 +12,25 @@ import {
 } from 'react-native';
 import DeckCard from '../DeckCard';
 
-// Mock Data for the list of decks
-const mockDecks = [
-  {
-    title: 'Advanced Vocabulary',
-    description:
-      'Challenging words for academic writing and professional communication',
-    lastStudied: '2 hours ago',
-    currentProgress: 25,
-    totalItems: 150,
-  },
-  {
-    title: 'Spanish Basics',
-    description: 'Essential Spanish vocabulary for beginners',
-    lastStudied: 'Yesterday',
-    currentProgress: 15,
-    totalItems: 200,
-  },
-  {
-    title: 'Medical Terminology',
-    description:
-      'Important medical terms and definitions for healthcare professionals',
-    lastStudied: '3 days ago',
-    currentProgress: 0,
-    totalItems: 300,
-  },
-];
-
 const RecentDecksWidget = () => {
+  const { data, error } = useRecentDecks();
+
+  if (!data || data.length === 0 || error) {
+    return null; // Don't render the widget if there's no data or an error
+  }
+
   return (
     <View style={styles.widgetContainer}>
-      {/* Widget Header */}
       <View style={styles.widgetHeader}>
         <Text style={styles.widgetTitle}>Recent Decks</Text>
         <TouchableOpacity style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>View All</Text>
-          {/* Changed component from Icon to Feather */}
           <Feather name="chevron-right" size={16} color="#666" />
         </TouchableOpacity>
       </View>
 
-      {/* Deck List */}
       <FlatList
-        data={mockDecks}
+        data={data}
         keyExtractor={item => item.title}
         scrollEnabled={false}
         renderItem={({ item }) => <DeckCard {...item} />}

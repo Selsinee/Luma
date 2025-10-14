@@ -1,34 +1,26 @@
 // DeckCard.tsx
+import { DeckRecentItem } from '@/api';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface DeckCardProps {
-  title: string;
-  description: string;
-  lastStudied: string;
-  currentProgress: number;
-  totalItems: number;
-}
-
-const DeckCard: React.FC<DeckCardProps> = ({
+const DeckCard: React.FC<DeckRecentItem> = ({
+  id,
   title,
   description,
-  lastStudied,
-  currentProgress,
-  totalItems,
+  last_studied,
+  current_progress,
+  total_items,
 }) => {
-  const percentage = Math.round((currentProgress / totalItems) * 100);
+  const percentage = Math.round((current_progress / total_items) * 100);
   const router = useRouter();
 
   return (
     <View style={styles.cardContainer}>
-      {/* Top Section: Icon, Title, Description */}
       <View style={styles.deckInfoRow}>
         <View style={styles.iconContainer}>
-          {/* Changed component from Icon to Feather */}
           <Feather name="book-open" size={20} color={Colors.primary} />
         </View>
         <View style={styles.deckTextContainer}>
@@ -37,26 +29,24 @@ const DeckCard: React.FC<DeckCardProps> = ({
         </View>
       </View>
 
-      {/* Middle Section: Stats */}
       <View style={styles.statsRow}>
         <View style={styles.leftStats}>
           {/* Changed component from Icon to Feather */}
           <Feather name="clock" size={14} color="#8A8A8A" />
-          <Text style={styles.statText}>{lastStudied}</Text>
+          <Text style={styles.statText}>{last_studied}</Text>
           <View style={styles.progressBadge}>
             <Text style={styles.progressText}>
-              {currentProgress}/{totalItems}
+              {current_progress}/{total_items}
             </Text>
           </View>
         </View>
         <Text style={styles.percentageText}>{percentage}%</Text>
       </View>
 
-      {/* Bottom Section: Action Button */}
       <TouchableOpacity
         style={styles.studyButton}
         onPress={() => {
-          router.navigate(`/deck-details`);
+          router.navigate(`/deck/${id}`);
         }}
       >
         <Text style={styles.studyButtonText}>Study Now</Text>

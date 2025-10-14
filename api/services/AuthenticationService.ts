@@ -53,12 +53,12 @@ export class AuthenticationService {
     }
     /**
      * Auth Google
-     * (Placeholder) Authenticates or registers a user via a Google OAuth token.
+     * Authenticates or registers a user via a Google ID token.
      * @param requestBody
      * @returns Token Successful Response
      * @throws ApiError
      */
-    public static loginGoogle(
+    public static authGoogle(
         requestBody: GoogleToken,
     ): CancelablePromise<Token> {
         return __request(OpenAPI, {

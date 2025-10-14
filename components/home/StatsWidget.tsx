@@ -1,47 +1,30 @@
 // StatsCard.tsx
 import Colors from '@/constants/Colors';
+import { useHomeStats } from '@/hooks/useHomeStats';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
-// Prop types remain the same
-interface StatsWidgetProps {
-  wordsStudied: number;
-  dailyGoal: number;
-  streak: number;
-  totalWords: number;
-  weeklyProgress: number;
-  weeklyGoal: number;
-}
-
-const StatsWidget: React.FC<StatsWidgetProps> = ({
-  wordsStudied,
-  dailyGoal,
-  streak,
-  totalWords,
-  weeklyProgress,
-  weeklyGoal,
-}) => {
-  // Calculate the fill percentage for the progress circle
-  const fillPercentage = (wordsStudied / dailyGoal) * 100;
+const StatsWidget: React.FC = () => {
+  const { stats } = useHomeStats();
+  const fillPercentage = (stats.wordsStudied / stats.dailyGoal) * 100;
 
   return (
     <View style={styles.card}>
-      {/* Left Section: Circular Progress */}
       <View style={styles.progressContainer}>
         <AnimatedCircularProgress
           size={100}
           width={10}
           fill={fillPercentage}
-          tintColor={Colors.primary} // The color of the progress bar
-          backgroundColor="#E8E8F0" // The color of the track
-          rotation={0} // Starts from the top
+          tintColor={Colors.primary}
+          backgroundColor="#E8E8F0"
+          rotation={0}
           lineCap="round"
           padding={5}
         ></AnimatedCircularProgress>
         <View style={styles.progressTextContainer}>
-          <Text style={styles.progressText}>{wordsStudied}</Text>
-          <Text style={styles.progressGoalText}>/ {dailyGoal}</Text>
+          <Text style={styles.progressText}>{stats.wordsStudied}</Text>
+          <Text style={styles.progressGoalText}>/ {stats.dailyGoal}</Text>
         </View>
         <Text style={styles.progressLabel}>Words studied today</Text>
       </View>
@@ -50,16 +33,18 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       <View style={styles.statsContainer}>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Streak</Text>
-          <Text style={styles.statValue}>{streak} days</Text>
+          <Text style={styles.statValue}>{stats.streak} days</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Total Words</Text>
-          <Text style={styles.statValue}>{totalWords.toLocaleString()}</Text>
+          <Text style={styles.statValue}>
+            {stats.totalWords.toLocaleString()}
+          </Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Weekly Goal</Text>
           <Text style={styles.statValue}>
-            {weeklyProgress}/{weeklyGoal} days
+            {stats.weeklyProgress}/{stats.weeklyGoal} days
           </Text>
         </View>
       </View>

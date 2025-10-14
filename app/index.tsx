@@ -1,12 +1,10 @@
 import { useAuth } from '@/context/AuthContext';
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +13,15 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Logo from '../assets/images/logo.svg';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ApiError, AuthenticationService } from '@/api';
+import * as Google from 'expo-auth-session/providers/google';
+import Constants from 'expo-constants';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const FeatureItem = ({
   icon,
@@ -37,8 +44,42 @@ export default function AuthScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
-  const { login, isLoading, register } = useAuth();
+  const { login, isLoading, register, handleTokenLogin } = useAuth();
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    iosClientId: Constants.expoConfig?.extra?.googleClientId.ios,
+    androidClientId: Constants.expoConfig?.extra?.googleClientId.android,
+    webClientId: Constants.expoConfig?.extra?.googleClientId.web,
+  });
+
+  useEffect(() => {
+    // This effect runs when the Google Sign-In flow returns a result
+    const handleGoogleResponse = async () => {
+      if (response?.type === 'success') {
+        const { id_token } = response.params;
+        if (id_token) {
+          try {
+            // Send the Google token to your backend
+            const backendResponse = await AuthenticationService.authGoogle({
+              google_token: id_token,
+            });
+            // If successful, log the user in
+            await handleTokenLogin(backendResponse);
+          } catch (error) {
+            const apiError = error as ApiError;
+            Alert.alert(
+              'Google Sign-In Failed',
+              apiError.body?.detail || 'An error occurred.',
+            );
+          }
+        }
+      }
+    };
+    handleGoogleResponse();
+  }, [response]);
+
+  const handleGoogleAuth = () => {
+    promptAsync();
+  };
 
   const fullNameRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
@@ -66,11 +107,6 @@ export default function AuthScreen() {
     });
   };
 
-  const handleGoogleAuth = () => {
-    router.replace('/(app)/(tabs)/home');
-  };
-
-  // --- Dynamic Content based on Auth Mode ---
   const isSignIn = authMode === 'signin';
 
   return (
@@ -84,7 +120,7 @@ export default function AuthScreen() {
         enableOnAndroid={true}
       >
         <View style={styles.appHeader}>
-          <Logo width={180} height={180} />
+          <Logo width={160} height={160} />
           <Text style={styles.appTagline}>Learn smarter, not harder</Text>
         </View>
 
@@ -104,21 +140,6 @@ export default function AuthScreen() {
               : 'Join thousands of learners worldwide'}
           </Text>
 
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleAuth}
-          >
-            <Feather name="globe" size={20} color="#555" />
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
-          </TouchableOpacity>
-
-          <View style={styles.orDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.orText}>or</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* --- Sign Up Fields (Conditional) --- */}
           {!isSignIn && (
             <>
               <Text style={styles.inputLabel}>Full Name</Text>
@@ -184,7 +205,6 @@ export default function AuthScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* --- Confirm Password & Forgot Password (Conditional) --- */}
           {isSignIn ? (
             <TouchableOpacity style={styles.forgotPasswordButton}>
               <Text style={styles.forgotPasswordText}>Forgot password?</Text>
@@ -203,7 +223,7 @@ export default function AuthScreen() {
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   returnKeyType="done"
-                  onSubmitEditing={() => console.log('done')}
+                  onSubmitEditing={handleCreateAccount}
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -218,7 +238,6 @@ export default function AuthScreen() {
             </>
           )}
 
-          {/* --- Main Action Button (Conditional) --- */}
           <TouchableOpacity
             style={styles.signInButton}
             disabled={isLoading}
@@ -241,7 +260,21 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {/* --- Bottom Link to Switch Modes (Conditional) --- */}
+          <View style={styles.orDivider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={handleGoogleAuth}
+            disabled={!request}
+          >
+            <Feather name="globe" size={20} color="#555" />
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
+
           <View style={styles.signUpContainer}>
             <Text style={styles.signUpText}>
               {isSignIn
@@ -265,23 +298,41 @@ export default function AuthScreen() {
     </SafeAreaView>
   );
 }
-// Styles are the same as the previous response, with minor adjustments
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9F9FB' },
-  scrollContent: { flexGrow: 1, padding: 20, alignItems: 'center' },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F9F9FB',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 20,
+    paddingTop: 8,
+    alignItems: 'center',
+  },
   appHeader: {
     alignItems: 'center',
     marginBottom: 24,
   },
-  appName: { fontSize: 28, fontWeight: 'bold', color: '#333', marginTop: 10 },
-  appTagline: { fontSize: 16, color: '#666', marginTop: 4 },
+  appName: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 10,
+  },
+  appTagline: {
+    fontSize: 14,
+    color: '#666',
+  },
   featuresContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
     marginBottom: 24,
   },
-  featureItem: { alignItems: 'center', width: '30%' },
+  featureItem: {
+    alignItems: 'center',
+    width: '30%',
+  },
   featureLabel: {
     fontSize: 12,
     color: '#666',
@@ -321,7 +372,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F7',
     borderRadius: 10,
     paddingVertical: 14,
-    marginBottom: 20,
   },
   googleButtonText: {
     fontSize: 16,
@@ -329,9 +379,21 @@ const styles = StyleSheet.create({
     color: '#333',
     marginLeft: 10,
   },
-  orDivider: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#E0E0E0' },
-  orText: { marginHorizontal: 10, color: '#9E9E9E', fontSize: 14 },
+  orDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  orText: {
+    marginHorizontal: 10,
+    color: '#9E9E9E',
+    fontSize: 14,
+  },
   inputLabel: {
     fontSize: 14,
     color: '#333',
@@ -349,9 +411,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E8E8F0',
   },
-  textInput: { flex: 1, marginLeft: 10, fontSize: 16, color: '#333' },
-  forgotPasswordButton: { alignSelf: 'flex-end', marginBottom: 20 },
-  forgotPasswordText: { color: '#A9B0D2', fontSize: 14, fontWeight: '500' },
+  textInput: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  forgotPasswordButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: '#A9B0D2',
+    fontSize: 14,
+    fontWeight: '500',
+  },
   signInButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -359,17 +433,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#A9B0D2',
     borderRadius: 10,
     paddingVertical: 14,
-    marginBottom: 20,
   },
-  signInButtonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
-  signInArrow: { marginLeft: 10 },
+  signInButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  signInArrow: {
+    marginLeft: 10,
+  },
   signUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 20,
   },
-  signUpText: { fontSize: 14, color: '#666' },
-  signUpLink: { fontSize: 14, color: '#A9B0D2', fontWeight: '600' },
+  signUpText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  signUpLink: {
+    fontSize: 14,
+    color: '#A9B0D2',
+    fontWeight: '600',
+  },
   footerText: {
     fontSize: 12,
     color: '#9E9E9E',
