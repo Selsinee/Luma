@@ -9,9 +9,16 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.theron.luma",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.theron.luma",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logogram.png",
         "backgroundColor": "#ffffff"
@@ -40,6 +47,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "googleClientId": {
+        "ios": "353307199525-o5nkdqsl0678dv9vlikmdgij5k0vup3s.apps.googleusercontent.com",
+        "android": "353307199525-te4lg5pb7kikclo0ldqmehbncd8lni92.apps.googleusercontent.com",
+        "web": "353307199525-p525k1f1v9r4pgq57qcudcatd7ratd2a.apps.googleusercontent.com"
+      },
+      "router": {},
+      "eas": {
+        "projectId": "f4141a81-ff95-4e97-a8f3-cb17935eaac1"
+      }
     }
   }
 }

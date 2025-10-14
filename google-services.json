@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "407474816579",
+    "project_id": "luma-fb-app",
+    "storage_bucket": "luma-fb-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407474816579:android:c45457d4fae72cc12076f6",
+        "android_client_info": {
+          "package_name": "com.theron.luma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApr5pCWzpqSlnoJh0IiNlTC5nTutMGYxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
